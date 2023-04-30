@@ -1,5 +1,5 @@
 ---
-device: PNY_USB_3.2.1_FD_071C2B4C04401401-0
+device: PNY_USB_3.2.1_FD_071C2B4C04401401-0:0
 partitionScheme: gpt
 unit: MiB
 partitions:
