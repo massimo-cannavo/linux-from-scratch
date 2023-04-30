@@ -35,7 +35,7 @@ def parse_args() -> Namespace:
     return args
 
 
-def validate_config(config: dict):
+def validate_config(config: dict) -> bool:
     '''
     Validates the YAML config file agains a defined schema.
 
@@ -45,7 +45,7 @@ def validate_config(config: dict):
     path = Path(SCHEMA_FILE)
     if not path.is_file():
         print(f'{Colors.RED}{SCHEMA_FILE} was not found{Colors.RESET}')
-        return None
+        return False
 
     with path.open(mode='r', encoding='utf-8') as schema:
         try:
