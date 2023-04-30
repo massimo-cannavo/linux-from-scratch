@@ -18,6 +18,7 @@ SCHEMA_FILE = f'{PARENT_DIR}/partitions-schema.yaml'
 class Colors:
     '''Colors used to diplay to the console.'''
     RED = '\033[1;31m'
+    GREEN = '\033[1;32m'
     RESET = '\033[m'
 
 
@@ -98,6 +99,7 @@ def get_device_path(serial_id: str) -> str:
     context = pyudev.Context()
     for device in context.list_devices(subsystem='block', DEVTYPE='disk'):
         if device.get('ID_SERIAL') == serial_id:
+            print(f'found device {Colors.GREEN}{serial_id}{Colors.RESET}')
             return device.sys_name
 
     return None
