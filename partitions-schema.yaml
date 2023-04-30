@@ -1,0 +1,90 @@
+---
+description: Specification for partitions.yaml file.
+type: object
+required:
+  - device
+  - partitionScheme
+  - unit
+  - partitions
+additionalProperties: false
+properties:
+  device:
+    description: >-
+      The ID_SERIAL attribute of the device fetched from udev.
+      You can query the attribute if you know the name of the
+      device under /dev.
+      ex. udevadm info --name=/dev/sda | grep 'ID_SERIAL='
+    type: string
+  partitionScheme:
+    description: >-
+      The partition scheme to apply to the device to partition.
+      https://www.gnu.org/software/parted/manual/html_node/mklabel.html
+    enum:
+      - bsd
+      - loop
+      - gpt
+      - mac
+      - msdos
+      - pc98
+      - sun
+    type: string
+  unit:
+    description: >-
+      Selects the current default unit that Parted will use to display
+      locations and capacities on the disk and to interpret those given
+      by the user if they are not suffixed by unit.
+    enum:
+      - s
+      - B
+      - KiB
+      - MiB
+      - GiB
+      - TiB
+      - kB
+      - MB
+      - GB
+      - TB
+    type: string
+  partitions:
+    description: Array of partitions to create.
+    type: array
+    items:
+      type: object
+      additionalProperties: false
+      required:
+        - name
+        - filesystem
+        - start
+        - end
+        - encrypted
+      properties:
+        name:
+          description: A label to attach to the partition.
+          type: string
+        filesystem:
+          description: The filesystem to format the partition.
+          enum:
+            - btrfs
+            - ext2
+            - ext3
+            - ext4
+            - fat12
+            - fat16
+            - fat32
+            - reiserfs
+            - xfs
+          type: string
+        flags:
+          description: Array of flags to enable on the partition.
+          type: array
+          items:
+            type: string
+        start:
+          description: Start of the partition.
+          type: integer
+        end:
+          description: End of the partition.
+          type: integer
+        encrypted:
+          description: Determines if the partition should be encrypted.
+          type: boolean
