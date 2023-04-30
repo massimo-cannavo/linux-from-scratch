@@ -6,6 +6,7 @@ from pathlib import Path
 import sys
 
 from jsonschema import exceptions, validate
+import pyudev
 import yaml
 
 PARENT_DIR = Path(__file__).parent.parent
@@ -87,6 +88,21 @@ def parse_config(filename: str) -> dict:
     return config
 
 
+def get_device_path(serial_id: str) -> str:
+    '''
+    Looks up the device path given a serial ID.
+
+    Parameters
+        serial_id: Serial ID of the device.
+    '''
+    context = pyudev.Context()
+    for device in context.list_devices(subsystem='block', DEVTYPE='disk'):
+        if device.get('ID_SERIAL') == serial_id:
+            return device.sys_name
+
+    return None
+
+
 def main() -> None:
     '''The main entrypoint of the script.'''
     args = parse_args()
@@ -96,6 +112,12 @@ def main() -> None:
 
     config = parse_config(args.file)
     if not config:
+        sys.exit(1)
+
+    device = config.get('device')
+    dev_path = get_device_path(device)
+    if not dev_path:
+        print(f'{Colors.RED}{device} not found{Colors.RESET}')
         sys.exit(1)
 
 
