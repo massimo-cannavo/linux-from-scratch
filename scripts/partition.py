@@ -1,5 +1,5 @@
 '''Partitions a device using a YAML file.'''
-from argparse import ArgumentParser
+from argparse import ArgumentParser, Namespace
 from dataclasses import dataclass
 import os
 import sys
@@ -11,7 +11,7 @@ class Colors:
     RESET = '\033[m'
 
 
-def parse_args():
+def parse_args() -> Namespace:
     '''Parse command line arguments.'''
     parser = ArgumentParser(description='Partitions a device from a YAML file.')
     parser.add_argument('-f', '--file',
@@ -26,7 +26,7 @@ def parse_args():
     return args
 
 
-def main():
+def main() -> None:
     '''The main entrypoint of the script.'''
     args = parse_args()
     if os.geteuid() != 0:
