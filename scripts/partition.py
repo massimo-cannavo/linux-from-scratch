@@ -2,7 +2,11 @@
 from argparse import ArgumentParser, Namespace
 from dataclasses import dataclass
 import os
+from pathlib import Path
 import sys
+
+import yaml
+
 
 @dataclass
 class Colors:
@@ -26,11 +30,42 @@ def parse_args() -> Namespace:
     return args
 
 
+def parse_config(filename: str) -> dict:
+    '''
+    Parse YAML file and extract the config needed to partition the device.
+
+    Parameters
+        filename: Name of the YAML config file to parse.
+    '''
+    path = Path(filename)
+    if not path.is_file():
+        print(f'{Colors.RED}{filename} was not found{Colors.RESET}')
+        return None
+
+    with path.open(mode='r', encoding='utf-8') as file:
+        try:
+            config = yaml.load(file, Loader=yaml.BaseLoader)
+        except yaml.YAMLError as exc:
+            if hasattr(exc, 'problem_mark'):
+                print(f'{exc.problem}{exc.problem_mark}')
+            else:
+                print(exc)
+
+            return None
+
+    return config
+
+
 def main() -> None:
     '''The main entrypoint of the script.'''
     args = parse_args()
     if os.geteuid() != 0:
         print(f'{Colors.RED}run as root{Colors.RESET}')
+        sys.exit(1)
+
+    config = parse_config(args.file)
+    if not config:
+        print(f'{Colors.RED}unable to read {args.file}')
         sys.exit(1)
 
 
