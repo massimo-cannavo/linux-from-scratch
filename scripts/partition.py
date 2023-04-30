@@ -9,6 +9,9 @@ def parse_args():
                         default='../partitions.yaml',
                         help='reads from FILE instead of the default (partitions.yml)',
                         type=str)
+    parser.add_argument('--plan',
+                        action='store_true',
+                        help='displays a preview of the operations to perform')
 
     args = parser.parse_args()
     return args
