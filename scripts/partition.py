@@ -3,6 +3,7 @@ from argparse import ArgumentParser, Namespace
 from dataclasses import dataclass
 import os
 from pathlib import Path
+import subprocess
 import sys
 
 from jsonschema import exceptions, validate
@@ -89,7 +90,7 @@ def parse_config(filename: str) -> dict:
     return config
 
 
-def get_device_path(serial_id: str) -> str:
+def get_dev_path(serial_id: str) -> str:
     '''
     Looks up the device path given a serial ID.
 
@@ -100,9 +101,23 @@ def get_device_path(serial_id: str) -> str:
     for device in context.list_devices(subsystem='block', DEVTYPE='disk'):
         if device.get('ID_SERIAL') == serial_id:
             print(f'found device {Colors.GREEN}{serial_id}{Colors.RESET}')
-            return device.sys_name
+            return f'/dev/{device.sys_name}'
 
     return None
+
+
+def display_partitions(dev_path: str) -> None:
+    '''
+    Display partition table of device.
+
+    Parameters
+        dev_path: path of device to display partition table.
+    '''
+    try:
+        subprocess.run(['parted', dev_path, 'print'], check=False)
+    except FileNotFoundError:
+        print(f'{Colors.RED}parted is not installed{Colors.RESET}')
+        sys.exit(1)
 
 
 def main() -> None:
@@ -116,11 +131,13 @@ def main() -> None:
     if not config:
         sys.exit(1)
 
-    device = config.get('device')
-    dev_path = get_device_path(device)
+    dev = config.get('device')
+    dev_path = get_dev_path(dev)
     if not dev_path:
-        print(f'{Colors.RED}{device} not found{Colors.RESET}')
+        print(f'{Colors.RED}{dev} not found{Colors.RESET}')
         sys.exit(1)
+
+    display_partitions(dev_path)
 
 
 if __name__ == '__main__':
