@@ -39,6 +39,8 @@ else
   echo -e "${RED}awk not found${RESET}"
 fi
 
+parted --version | head -n1
+cryptsetup --version | cut -d" " -f1-2
 gcc --version | head -n1
 g++ --version | head -n1
 grep --version | head -n1
