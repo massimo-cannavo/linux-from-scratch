@@ -13,6 +13,7 @@ import yaml
 PARENT_DIR = Path(__file__).parent.parent
 CONFIG_FILE = f'{PARENT_DIR}/partitions.yaml'
 SCHEMA_FILE = f'{PARENT_DIR}/partitions-schema.yaml'
+UTF8 = 'utf-8'
 
 
 @dataclass
@@ -20,6 +21,8 @@ class Colors:
     '''Colors used to diplay to the console.'''
     RED = '\033[1;31m'
     GREEN = '\033[1;32m'
+    YELLOW = '\033[1;33m'
+    BLUE  = '\033[1;34m'
     RESET = '\033[m'
 
 
@@ -30,7 +33,7 @@ def parse_args() -> Namespace:
                         default=CONFIG_FILE,
                         help='reads from FILE instead of the default (partitions.yml)',
                         type=str)
-    parser.add_argument('--plan',
+    parser.add_argument('--what-if',
                         action='store_true',
                         help='displays a preview of the operations to perform')
     args = parser.parse_args()
@@ -49,7 +52,7 @@ def validate_config(config: dict) -> bool:
         print(f'{Colors.RED}{SCHEMA_FILE} was not found{Colors.RESET}')
         return False
 
-    with path.open(mode='r', encoding='utf-8') as schema:
+    with path.open(mode='r', encoding=UTF8) as schema:
         try:
             validate(config, yaml.safe_load(schema))
         except exceptions.ValidationError as exc:
@@ -72,7 +75,7 @@ def parse_config(filename: str) -> dict:
         print(f'{Colors.RED}{filename} was not found{Colors.RESET}')
         return None
 
-    with path.open(mode='r', encoding='utf-8') as file:
+    with path.open(mode='r', encoding=UTF8) as file:
         try:
             config = yaml.safe_load(file)
             if not validate_config(config):
@@ -119,6 +122,28 @@ def display_partitions(dev_path: str) -> None:
         sys.exit(1)
 
 
+def display_changes(config: dict, dev_path: str) -> None:
+    '''TODO: add docstring.'''
+    print(f'{Colors.YELLOW}Device will be wiped and formatted:{Colors.RESET}\n'
+          f'Partition Table: {Colors.BLUE}{config.get("partitionScheme")}{Colors.RESET}')
+
+    dev = dev_path.replace('/dev/', '')
+    path = Path(f'/sys/block/{dev}/size')
+    if not path:
+        print(f'{Colors.RED}unable to get size of {dev_path}{Colors.RESET}')
+
+    size = 0
+    with path.open(mode='r', encoding=UTF8) as file:
+        size = 512 * file.read()
+
+    for i,partition in enumerate(config.get('partitions')):
+        print(f'Partition {i}\n'
+              f'  Name: {Colors.BLUE}{partition.get("name")}{Colors.RESET}\n'
+              f'  Filesystem: {Colors.BLUE}{partition.get("filesystem")}{Colors.RESET}\n'
+              f'  Start: {Colors.BLUE}{partition.get("start")}{Colors.RESET}\n'
+              f'  End: {Colors.BLUE}{partition.get("end")}{Colors.RESET}')
+
+
 def main() -> None:
     '''The main entrypoint of the script.'''
     args = parse_args()
@@ -137,6 +162,9 @@ def main() -> None:
         sys.exit(1)
 
     display_partitions(dev_path)
+    if args.what_if:
+        display_changes(config, dev_path)
+        sys.exit()
 
 
 if __name__ == '__main__':
