@@ -40,7 +40,7 @@ properties:
       - MiB
       - GiB
       - TiB
-      - kB
+      - KB
       - MB
       - GB
       - TB
