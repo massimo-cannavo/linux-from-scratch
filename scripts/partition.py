@@ -31,6 +31,29 @@ class Colors:
     RESET = '\033[m'
 
 
+def main() -> None:
+    '''The main entrypoint of the script.'''
+    args = parse_args()
+    if os.geteuid() != 0:
+        print(f'{Colors.RED}run as root{Colors.RESET}')
+        sys.exit(1)
+
+    config = parse_config(args.file)
+    if not config:
+        sys.exit(1)
+
+    dev = config.get('device')
+    dev_path = get_dev_path(dev)
+    if not dev_path:
+        print(f'{Colors.RED}{dev} not found{Colors.RESET}')
+        sys.exit(1)
+
+    display_partitions(dev_path)
+    if args.what_if:
+        display_changes(config, dev_path)
+        sys.exit()
+
+
 def parse_args() -> Namespace:
     '''Parse command line arguments.'''
     parser = ArgumentParser(description='Partitions a device from a YAML file.')
@@ -43,30 +66,6 @@ def parse_args() -> Namespace:
                         help='displays a preview of the operations to perform')
     args = parser.parse_args()
     return args
-
-
-def validate_config(config: dict) -> bool:
-    '''
-    Validates the YAML config file agains a defined schema.
-
-    Parameters
-        config: dict
-            Contents of the YAML config file to validate.
-    '''
-    path = Path(SCHEMA_FILE)
-    if not path.is_file():
-        print(f'{Colors.RED}{SCHEMA_FILE} was not found{Colors.RESET}')
-        return False
-
-    with path.open(mode='r', encoding=UTF8) as schema:
-        try:
-            validate(config, yaml.safe_load(schema))
-        except exceptions.ValidationError as exc:
-            print(f'{CONFIG_FILE}:\n  '
-                  f'{Colors.RED}{exc.message}{Colors.RESET}')
-            return False
-
-    return True
 
 
 def parse_config(filename: str) -> dict:
@@ -99,6 +98,30 @@ def parse_config(filename: str) -> dict:
     return config
 
 
+def validate_config(config: dict) -> bool:
+    '''
+    Validates the YAML config file agains a defined schema.
+
+    Parameters
+        config: dict
+            Contents of the YAML config file to validate.
+    '''
+    path = Path(SCHEMA_FILE)
+    if not path.is_file():
+        print(f'{Colors.RED}{SCHEMA_FILE} was not found{Colors.RESET}')
+        return False
+
+    with path.open(mode='r', encoding=UTF8) as schema:
+        try:
+            validate(config, yaml.safe_load(schema))
+        except exceptions.ValidationError as exc:
+            print(f'{CONFIG_FILE}:\n  '
+                  f'{Colors.RED}{exc.message}{Colors.RESET}')
+            return False
+
+    return True
+
+
 def get_dev_path(serial_id: str) -> str:
     '''
     Looks up the device path given a serial ID.
@@ -114,58 +137,6 @@ def get_dev_path(serial_id: str) -> str:
             return f'/dev/{device.sys_name}'
 
     return None
-
-
-def to_bytes(size: int, size_unit: str) -> int:
-    '''
-    Converts size to bytes from the specified unit.
-
-    Parameters
-        size: int
-            The size to convert to bytes.
-        size_unit: str
-            The unit that the size is being converted from.
-    '''
-    unit = UNIT_SYSTEM.get(size_unit)
-    if not unit:
-        print(f'invalid unit {size_unit}')
-
-    units = {
-        'B': 1,
-        'K': unit,
-        'M': unit**2,
-        'G': unit**3,
-        'T': unit**4
-    }
-
-    return size * units.get(size_unit[0])
-
-
-def convert_size(size_bytes: int, size_unit: str) -> tuple[int, str]:
-    '''
-    Converts bytes into appropriate unit for readability.
-
-    Parameters
-        size_bytes: int
-            Size in bytes to convert to the appropriate unit.
-        size_unit: str
-            The original unit being used to parition the device.
-    '''
-    unit = UNIT_SYSTEM.get(size_unit)
-    if not unit:
-        print(f'invalid unit {size_unit}')
-
-    i = int(math.floor(math.log(size_bytes, unit)))
-    size = int(round(size_bytes / math.pow(unit, i), 2))
-    units = ('B', 'K', 'M', 'G', 'T')
-    if i == 0:
-        suffix = ''
-    elif unit == 1024:
-        suffix = 'iB'
-    elif unit == 1000:
-        suffix = 'B'
-
-    return (size, f'{units[i]}{suffix}')
 
 
 def display_partitions(dev_path: str) -> None:
@@ -221,27 +192,56 @@ def display_changes(config: dict, dev_path: str) -> None:
               f'  Size: {Colors.BLUE}{size} {unit}{Colors.RESET}')
 
 
-def main() -> None:
-    '''The main entrypoint of the script.'''
-    args = parse_args()
-    if os.geteuid() != 0:
-        print(f'{Colors.RED}run as root{Colors.RESET}')
-        sys.exit(1)
+def to_bytes(size: int, size_unit: str) -> int:
+    '''
+    Converts size to bytes from the specified unit.
 
-    config = parse_config(args.file)
-    if not config:
-        sys.exit(1)
+    Parameters
+        size: int
+            The size to convert to bytes.
+        size_unit: str
+            The unit that the size is being converted from.
+    '''
+    unit = UNIT_SYSTEM.get(size_unit)
+    if not unit:
+        print(f'invalid unit {size_unit}')
 
-    dev = config.get('device')
-    dev_path = get_dev_path(dev)
-    if not dev_path:
-        print(f'{Colors.RED}{dev} not found{Colors.RESET}')
-        sys.exit(1)
+    units = {
+        'B': 1,
+        'K': unit,
+        'M': unit**2,
+        'G': unit**3,
+        'T': unit**4
+    }
 
-    display_partitions(dev_path)
-    if args.what_if:
-        display_changes(config, dev_path)
-        sys.exit()
+    return size * units.get(size_unit[0])
+
+
+def convert_size(size_bytes: int, size_unit: str) -> tuple[int, str]:
+    '''
+    Converts bytes into appropriate unit for readability.
+
+    Parameters
+        size_bytes: int
+            Size in bytes to convert to the appropriate unit.
+        size_unit: str
+            The original unit being used to parition the device.
+    '''
+    unit = UNIT_SYSTEM.get(size_unit)
+    if not unit:
+        print(f'invalid unit {size_unit}')
+
+    i = int(math.floor(math.log(size_bytes, unit)))
+    size = int(round(size_bytes / math.pow(unit, i), 2))
+    units = ('B', 'K', 'M', 'G', 'T')
+    if i == 0:
+        suffix = ''
+    elif unit == 1024:
+        suffix = 'iB'
+    elif unit == 1000:
+        suffix = 'B'
+
+    return (size, f'{units[i]}{suffix}')
 
 
 if __name__ == '__main__':
