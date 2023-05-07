@@ -53,6 +53,8 @@ def main() -> None:
         display_changes(config, dev_path)
         sys.exit()
 
+    partition_dev(config, dev_path)
+
 
 def parse_args() -> Namespace:
     '''Parse command line arguments.'''
@@ -242,6 +244,30 @@ def convert_size(size_bytes: int, size_unit: str) -> tuple[int, str]:
         suffix = 'B'
 
     return (size, f'{units[i]}{suffix}')
+
+
+def partition_dev(config: dict, dev_path: str):
+    '''TODO: add docstring'''
+    partition_scheme = config.get('partitionScheme')
+    unit = config.get('unit')
+    cmd = ['parted', '--script', '--align', 'optimal', dev_path,
+           'mklabel', partition_scheme, 'unit', unit]
+    for i, partition in enumerate(config.get('partitions')):
+        cmd.extend(['mkpart', partition.get('name'), partition.get('filesystem'),
+                    partition.get('start')])
+        end = partition.get('end')
+        if end == -1:
+            cmd.append('--')
+
+        cmd.append(end)
+        for flag in partition.get('flags', []):
+            cmd.extend(['set', i + 1, flag, 'on'])
+
+    # try:
+    #     subprocess.run(cmd, check=False)
+    # except FileNotFoundError:
+    #     print(f'{Colors.RED}parted is not installed{Colors.RESET}')
+    #     sys.exit(1)
 
 
 if __name__ == '__main__':
