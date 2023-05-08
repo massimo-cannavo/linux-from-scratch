@@ -48,10 +48,10 @@ def main() -> None:
         print(f'{Colors.RED}{dev} not found{Colors.RESET}')
         sys.exit(1)
 
-    display_partitions(dev_path)
+    if not display_partitions(dev_path):
+        sys.exit(1)
     if args.what_if:
-        display_changes(config, dev_path)
-        sys.exit()
+        sys.exit(not display_changes(config, dev_path))
 
     partition_dev(config, dev_path)
 
@@ -141,7 +141,7 @@ def get_dev_path(serial_id: str) -> str:
     return None
 
 
-def display_partitions(dev_path: str) -> None:
+def display_partitions(dev_path: str) -> bool:
     '''
     Display partition table of device.
 
@@ -153,10 +153,12 @@ def display_partitions(dev_path: str) -> None:
         subprocess.run(['parted', dev_path, 'print'], check=False)
     except FileNotFoundError:
         print(f'{Colors.RED}parted is not installed{Colors.RESET}')
-        sys.exit(1)
+        return False
+
+    return True
 
 
-def display_changes(config: dict, dev_path: str) -> None:
+def display_changes(config: dict, dev_path: str) -> bool:
     '''
     Display changes that will be performed on the device.
 
@@ -173,7 +175,7 @@ def display_changes(config: dict, dev_path: str) -> None:
     path = Path(f'/sys/block/{dev}/size')
     if not path.is_file():
         print(f'{Colors.RED}unable to get size of {dev}{Colors.RESET}')
-        sys.exit(1)
+        return False
 
     unit = config.get('unit')
     for i, partition in enumerate(config.get('partitions')):
@@ -192,6 +194,8 @@ def display_changes(config: dict, dev_path: str) -> None:
               f'  Start: {Colors.BLUE}{partition.get("start")}{Colors.RESET}\n'
               f'  End: {Colors.BLUE}{partition.get("end")}{Colors.RESET}\n'
               f'  Size: {Colors.BLUE}{size} {unit}{Colors.RESET}')
+
+    return True
 
 
 def to_bytes(size: int, size_unit: str) -> int:
@@ -268,6 +272,15 @@ def partition_dev(config: dict, dev_path: str):
     # except FileNotFoundError:
     #     print(f'{Colors.RED}parted is not installed{Colors.RESET}')
     #     sys.exit(1)
+
+
+def unmount_dev(dev_path: str):
+    '''TODO: add docstring'''
+    try:
+        subprocess.run(['umount', 'sd'], check=False)
+    except FileNotFoundError:
+        print(f'{Colors.RED}umount is not installed{Colors.RESET}')
+        sys.exit(1)
 
 
 if __name__ == '__main__':
