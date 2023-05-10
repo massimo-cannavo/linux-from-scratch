@@ -31,6 +31,12 @@ class Colors:
     RESET = '\033[m'
 
 
+class InvalidConfigError(Exception):
+    '''Exception raised for errors in the config file.'''
+    def __init__(self, message: str) -> None:
+        super().__init__(message)
+
+
 def main() -> None:
     '''The main entrypoint of the script.'''
     args = parse_args()
@@ -38,8 +44,10 @@ def main() -> None:
         print(f'{Colors.RED}run as root{Colors.RESET}')
         sys.exit(1)
 
-    config = parse_config(args.file)
-    if not config:
+    try:
+        config = parse_config(args.file)
+    except (InvalidConfigError, FileNotFoundError) as exc:
+        print(exc)
         sys.exit(1)
 
     dev = config.get('device')
@@ -80,27 +88,25 @@ def parse_config(filename: str) -> dict:
     '''
     path = Path(filename)
     if not path.is_file():
-        print(f'{Colors.RED}{filename} was not found{Colors.RESET}')
-        return None
+        raise FileNotFoundError(f'{Colors.RED}{filename} was not found{Colors.RESET}')
 
     with path.open(mode='r', encoding=UTF8) as file:
         try:
             config = yaml.safe_load(file)
-            if not validate_config(config):
-                return None
+            validate_config(config)
         except yaml.YAMLError as exc:
             if hasattr(exc, 'problem_mark'):
-                print(f'{Colors.RED}{exc.problem}{Colors.RESET}\n'
-                      f'{exc.problem_mark}')
+                error = f'{Colors.RED}{exc.problem}{Colors.RESET}\n' \
+                        f'{exc.problem_mark}'
             else:
-                print(f'{Colors.RED}{exc}{Colors.RESET}')
+                error = f'{Colors.RED}{exc}{Colors.RESET}'
 
-            return None
+            raise InvalidConfigError(error) from exc
 
     return config
 
 
-def validate_config(config: dict) -> bool:
+def validate_config(config: dict) -> None:
     '''
     Validates the YAML config file agains a defined schema.
 
@@ -110,18 +116,14 @@ def validate_config(config: dict) -> bool:
     '''
     path = Path(SCHEMA_FILE)
     if not path.is_file():
-        print(f'{Colors.RED}{SCHEMA_FILE} was not found{Colors.RESET}')
-        return False
+        raise FileNotFoundError(f'{Colors.RED}{SCHEMA_FILE} was not found{Colors.RESET}')
 
     with path.open(mode='r', encoding=UTF8) as schema:
         try:
             validate(config, yaml.safe_load(schema))
         except exceptions.ValidationError as exc:
-            print(f'{CONFIG_FILE}:\n  '
-                  f'{Colors.RED}{exc.message}{Colors.RESET}')
-            return False
-
-    return True
+            raise InvalidConfigError(f'{CONFIG_FILE}:\n  '
+                                     f'{Colors.RED}{exc.message}{Colors.RESET}') from exc
 
 
 def get_dev_path(serial_id: str) -> str:
