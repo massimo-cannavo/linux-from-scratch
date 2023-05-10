@@ -37,6 +37,18 @@ class InvalidConfigError(Exception):
         super().__init__(message)
 
 
+class DeviceNotFoundError(Exception):
+    '''Exception raised when a device was not found.'''
+    def __init__(self, message: str) -> None:
+        super().__init__(message)
+
+
+class InvalidUnitError(Exception):
+    '''Exception raised when an invalid unit was specified.'''
+    def __init__(self, message: str) -> None:
+        super().__init__(message)
+
+
 def main() -> None:
     '''The main entrypoint of the script.'''
     args = parse_args()
@@ -46,22 +58,18 @@ def main() -> None:
 
     try:
         config = parse_config(args.file)
-    except (InvalidConfigError, FileNotFoundError) as exc:
+        dev = config.get('device')
+        dev_path = get_dev_path(dev)
+        print(f'found device {Colors.GREEN}{dev}{Colors.RESET}')
+        display_partitions(dev_path)
+        if args.what_if:
+            display_changes(config, dev_path)
+            sys.exit()
+
+        partition_dev(config, dev_path)
+    except (InvalidConfigError, FileNotFoundError, DeviceNotFoundError, InvalidUnitError) as exc:
         print(exc)
         sys.exit(1)
-
-    dev = config.get('device')
-    dev_path = get_dev_path(dev)
-    if not dev_path:
-        print(f'{Colors.RED}{dev} not found{Colors.RESET}')
-        sys.exit(1)
-
-    if not display_partitions(dev_path):
-        sys.exit(1)
-    if args.what_if:
-        sys.exit(not display_changes(config, dev_path))
-
-    partition_dev(config, dev_path)
 
 
 def parse_args() -> Namespace:
@@ -137,13 +145,12 @@ def get_dev_path(serial_id: str) -> str:
     context = pyudev.Context()
     for device in context.list_devices(subsystem='block', DEVTYPE='disk'):
         if device.get('ID_SERIAL') == serial_id:
-            print(f'found device {Colors.GREEN}{serial_id}{Colors.RESET}')
             return f'/dev/{device.sys_name}'
 
-    return None
+    raise DeviceNotFoundError(f'{Colors.RED}{serial_id} not found{Colors.RESET}')
 
 
-def display_partitions(dev_path: str) -> bool:
+def display_partitions(dev_path: str) -> None:
     '''
     Display partition table of device.
 
@@ -153,14 +160,11 @@ def display_partitions(dev_path: str) -> bool:
     '''
     try:
         subprocess.run(['parted', dev_path, 'print'], check=False)
-    except FileNotFoundError:
-        print(f'{Colors.RED}parted is not installed{Colors.RESET}')
-        return False
-
-    return True
+    except FileNotFoundError as exc:
+        raise FileNotFoundError(f'{Colors.RED}parted is not installed{Colors.RESET}') from exc
 
 
-def display_changes(config: dict, dev_path: str) -> bool:
+def display_changes(config: dict, dev_path: str) -> None:
     '''
     Display changes that will be performed on the device.
 
@@ -176,8 +180,7 @@ def display_changes(config: dict, dev_path: str) -> bool:
     dev = dev_path.replace('/dev/', '')
     path = Path(f'/sys/block/{dev}/size')
     if not path.is_file():
-        print(f'{Colors.RED}unable to get size of {dev}{Colors.RESET}')
-        return False
+        raise FileNotFoundError(f'{Colors.RED}unable to get size of {dev}{Colors.RESET}')
 
     unit = config.get('unit')
     for i, partition in enumerate(config.get('partitions')):
@@ -197,8 +200,6 @@ def display_changes(config: dict, dev_path: str) -> bool:
               f'  End: {Colors.BLUE}{partition.get("end")}{Colors.RESET}\n'
               f'  Size: {Colors.BLUE}{size} {unit}{Colors.RESET}')
 
-    return True
-
 
 def to_bytes(size: int, size_unit: str) -> int:
     '''
@@ -212,7 +213,7 @@ def to_bytes(size: int, size_unit: str) -> int:
     '''
     unit = UNIT_SYSTEM.get(size_unit)
     if not unit:
-        print(f'invalid unit {size_unit}')
+        raise InvalidUnitError(f'invalid unit {size_unit}')
 
     units = {
         'B': 1,
@@ -237,7 +238,7 @@ def convert_size(size_bytes: int, size_unit: str) -> tuple[int, str]:
     '''
     unit = UNIT_SYSTEM.get(size_unit)
     if not unit:
-        print(f'invalid unit {size_unit}')
+        raise InvalidUnitError(f'invalid unit {size_unit}')
 
     i = int(math.floor(math.log(size_bytes, unit)))
     size = int(round(size_bytes / math.pow(unit, i), 2))
