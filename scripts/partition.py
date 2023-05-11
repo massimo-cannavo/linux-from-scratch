@@ -254,7 +254,15 @@ def convert_size(size_bytes: int, size_unit: str) -> tuple[int, str]:
 
 
 def partition_dev(config: dict, dev_path: str):
-    '''TODO: add docstring'''
+    '''
+    Partitions a device using a config parsed from a YAML file.
+
+    Parameters:
+        config: dict
+            Config used to partition the device.
+        dev_path: str
+            Path of the device to partition.
+    '''
     unmount_dev(dev_path)
     partition_scheme = config.get('partitionScheme')
     unit = config.get('unit')
@@ -262,20 +270,21 @@ def partition_dev(config: dict, dev_path: str):
            'mklabel', partition_scheme, 'unit', unit]
     for i, partition in enumerate(config.get('partitions')):
         cmd.extend(['mkpart', partition.get('name'), partition.get('filesystem'),
-                    partition.get('start')])
+                    str(partition.get('start'))])
         end = partition.get('end')
         if end == -1:
             cmd.append('--')
 
-        cmd.append(end)
+        cmd.append(str(end))
         for flag in partition.get('flags', []):
-            cmd.extend(['set', i + 1, flag, 'on'])
+            cmd.extend(['set', str(i + 1), flag, 'on'])
 
-    # try:
-    #     subprocess.run(cmd, check=False)
-    # except FileNotFoundError:
-    #     print(f'{Colors.RED}parted is not installed{Colors.RESET}')
-    #     sys.exit(1)
+    try:
+        subprocess.run(cmd, check=True)
+    except FileNotFoundError as exc:
+        raise FileNotFoundError(f'{Colors.RED}parted is not installed{Colors.RESET}') from exc
+    except subprocess.CalledProcessError:
+        sys.exit(1)
 
 
 def unmount_dev(dev_path: str):
