@@ -58,9 +58,7 @@ def main() -> None:
 
     try:
         config = parse_config(args.file)
-        dev = config.get('device')
-        dev_path = get_dev_path(dev)
-        print(f'found device {Colors.GREEN}{dev}{Colors.RESET}')
+        dev_path = get_dev_path(serial_id=config.get('device'))
         display_partitions(dev_path)
         if args.what_if:
             display_changes(config, dev_path)
@@ -159,9 +157,11 @@ def display_partitions(dev_path: str) -> None:
             path of device to display partition table.
     '''
     try:
-        subprocess.run(['parted', dev_path, 'print'], check=False)
+        subprocess.run(['parted', '--script', dev_path, 'print'], check=True)
     except FileNotFoundError as exc:
         raise FileNotFoundError(f'{Colors.RED}parted is not installed{Colors.RESET}') from exc
+    except subprocess.CalledProcessError:
+        sys.exit(1)
 
 
 def display_changes(config: dict, dev_path: str) -> None:
@@ -255,6 +255,7 @@ def convert_size(size_bytes: int, size_unit: str) -> tuple[int, str]:
 
 def partition_dev(config: dict, dev_path: str):
     '''TODO: add docstring'''
+    unmount_dev(dev_path)
     partition_scheme = config.get('partitionScheme')
     unit = config.get('unit')
     cmd = ['parted', '--script', '--align', 'optimal', dev_path,
@@ -278,11 +279,21 @@ def partition_dev(config: dict, dev_path: str):
 
 
 def unmount_dev(dev_path: str):
-    '''TODO: add docstring'''
+    '''
+    Unmounts all filesystems from a given device.
+
+    Parameters
+        dev_path: str
+            Path of the device to unmount.
+    '''
     try:
-        subprocess.run(['umount', 'sd'], check=False)
-    except FileNotFoundError:
-        print(f'{Colors.RED}umount is not installed{Colors.RESET}')
+        proc = subprocess.run(['lsblk', dev_path, '--noheadings', '--raw',
+                               '--output', 'MOUNTPOINT'], check=True, capture_output=True)
+        for mount in proc.stdout.decode().strip().splitlines():
+            subprocess.run(['umount', mount], check=True)
+    except FileNotFoundError as exc:
+        raise FileNotFoundError(f'{Colors.RED}umount is not installed{Colors.RESET}') from exc
+    except subprocess.CalledProcessError:
         sys.exit(1)
 
 
