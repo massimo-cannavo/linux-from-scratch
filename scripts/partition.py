@@ -78,14 +78,10 @@ def main() -> None:
         handle_error(error=f'no such file or directory: {exc.filename}')
     except ValidationError as exc:
         handle_error(error=exc.message)
-    except DeviceNotFoundError as exc:
-        handle_error(error=exc)
-    except CommandNotFoundError as exc:
+    except (DeviceNotFoundError, CommandNotFoundError, InvalidUnitError) as exc:
         handle_error(error=exc)
     except subprocess.CalledProcessError as exc:
         handle_error()
-    except InvalidUnitError as exc:
-        handle_error(error=exc)
 
 
 def handle_error(error: Any = None) -> None:
