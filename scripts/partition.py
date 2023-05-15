@@ -17,7 +17,6 @@ PARENT_DIR = Path(__file__).parent.parent
 CONFIG_FILE = f'{PARENT_DIR}/partitions.yaml'
 SCHEMA_FILE = f'{PARENT_DIR}/partitions-schema.yaml'
 LUKS_PASSPHRASE = 'LUKS_PASSPHRASE'
-PARTED = 'parted'
 UTF8 = 'utf-8'
 UNIT_SYSTEM = {
     **dict.fromkeys(['B', 'KiB', 'MiB', 'GiB', 'TiB'], 1024),
