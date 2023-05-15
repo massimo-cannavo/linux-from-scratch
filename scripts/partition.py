@@ -1,19 +1,23 @@
 '''Partitions a device using a YAML file.'''
-from argparse import ArgumentParser, Namespace
+import argparse
 from dataclasses import dataclass
 import math
 import os
 from pathlib import Path
 import subprocess
 import sys
+from typing import Any
 
-from jsonschema import exceptions, validate
+from jsonschema import validate
+from jsonschema.exceptions import ValidationError
 import pyudev
 import yaml
 
 PARENT_DIR = Path(__file__).parent.parent
 CONFIG_FILE = f'{PARENT_DIR}/partitions.yaml'
 SCHEMA_FILE = f'{PARENT_DIR}/partitions-schema.yaml'
+LUKS_PASSPHRASE = 'LUKS_PASSPHRASE'
+PARTED = 'parted'
 UTF8 = 'utf-8'
 UNIT_SYSTEM = {
     **dict.fromkeys(['B', 'KiB', 'MiB', 'GiB', 'TiB'], 1024),
@@ -31,14 +35,8 @@ class Colors:
     RESET = '\033[m'
 
 
-class InvalidConfigError(Exception):
-    '''Exception raised for errors in the config file.'''
-    def __init__(self, message: str) -> None:
-        super().__init__(message)
-
-
-class DeviceNotFoundError(Exception):
-    '''Exception raised when a device was not found.'''
+class CommandNotFoundError(Exception):
+    '''Exception raised when a command was not found.'''
     def __init__(self, message: str) -> None:
         super().__init__(message)
 
@@ -49,30 +47,65 @@ class InvalidUnitError(Exception):
         super().__init__(message)
 
 
+class DeviceNotFoundError(Exception):
+    '''Exception raised when a device was not found.'''
+    def __init__(self, message: str) -> None:
+        super().__init__(message)
+
+
 def main() -> None:
     '''The main entrypoint of the script.'''
     args = parse_args()
     if os.geteuid() != 0:
-        print(f'{Colors.RED}run as root{Colors.RESET}')
-        sys.exit(1)
+        handle_error(error='run as root')
 
     try:
         config = parse_config(args.file)
-        dev_path = get_dev_path(serial_id=config.get('device'))
+        dev_path = get_dev_path(config.get('device'))
         display_partitions(dev_path)
         if args.what_if:
             display_changes(config, dev_path)
             sys.exit()
 
         partition_dev(config, dev_path)
-    except (InvalidConfigError, FileNotFoundError, DeviceNotFoundError, InvalidUnitError) as exc:
-        print(exc)
-        sys.exit(1)
+    except yaml.YAMLError as exc:
+        if hasattr(exc, 'problem_mark'):
+            error = f'{exc.problem}\n{exc.problem_mark}'
+        else:
+            error = exc
+
+        handle_error(error)
+    except FileNotFoundError as exc:
+        handle_error(error=f'no such file or directory: {exc.filename}')
+    except ValidationError as exc:
+        handle_error(error=exc.message)
+    except DeviceNotFoundError as exc:
+        handle_error(error=exc)
+    except CommandNotFoundError as exc:
+        handle_error(error=exc)
+    except subprocess.CalledProcessError as exc:
+        handle_error()
+    except InvalidUnitError as exc:
+        handle_error(error=exc)
 
 
-def parse_args() -> Namespace:
+def handle_error(error: Any = None) -> None:
+    '''
+    Error handling that gracefuly terminates the program.
+
+    Parameters
+        error: Any
+            The error message to print to the console.
+    '''
+    if error:
+        print(f'{Colors.RED}[ ERROR ]{Colors.RESET} {error}')
+
+    sys.exit(1)
+
+
+def parse_args() -> argparse.Namespace:
     '''Parse command line arguments.'''
-    parser = ArgumentParser(description='Partitions a device from a YAML file.')
+    parser = argparse.ArgumentParser(description='Partitions a device from a YAML file.')
     parser.add_argument('-f', '--file',
                         default=CONFIG_FILE,
                         help='reads from FILE instead of the default (partitions.yml)',
@@ -92,44 +125,12 @@ def parse_config(filename: str) -> dict:
         filename: str
             Name of the YAML config file to parse.
     '''
-    path = Path(filename)
-    if not path.is_file():
-        raise FileNotFoundError(f'{Colors.RED}{filename} was not found{Colors.RESET}')
-
-    with path.open(mode='r', encoding=UTF8) as file:
-        try:
-            config = yaml.safe_load(file)
-            validate_config(config)
-        except yaml.YAMLError as exc:
-            if hasattr(exc, 'problem_mark'):
-                error = f'{Colors.RED}{exc.problem}{Colors.RESET}\n' \
-                        f'{exc.problem_mark}'
-            else:
-                error = f'{Colors.RED}{exc}{Colors.RESET}'
-
-            raise InvalidConfigError(error) from exc
+    with Path(filename).open(mode='r', encoding=UTF8) as file:
+        config = yaml.safe_load(file)
+        with Path(SCHEMA_FILE).open(mode='r', encoding=UTF8) as schema:
+            validate(config, yaml.safe_load(schema))
 
     return config
-
-
-def validate_config(config: dict) -> None:
-    '''
-    Validates the YAML config file agains a defined schema.
-
-    Parameters
-        config: dict
-            Contents of the YAML config file to validate.
-    '''
-    path = Path(SCHEMA_FILE)
-    if not path.is_file():
-        raise FileNotFoundError(f'{Colors.RED}{SCHEMA_FILE} was not found{Colors.RESET}')
-
-    with path.open(mode='r', encoding=UTF8) as schema:
-        try:
-            validate(config, yaml.safe_load(schema))
-        except exceptions.ValidationError as exc:
-            raise InvalidConfigError(f'{CONFIG_FILE}:\n  '
-                                     f'{Colors.RED}{exc.message}{Colors.RESET}') from exc
 
 
 def get_dev_path(serial_id: str) -> str:
@@ -145,7 +146,7 @@ def get_dev_path(serial_id: str) -> str:
         if device.get('ID_SERIAL') == serial_id:
             return f'/dev/{device.sys_name}'
 
-    raise DeviceNotFoundError(f'{Colors.RED}{serial_id} not found{Colors.RESET}')
+    raise DeviceNotFoundError(f'device not found: {serial_id}')
 
 
 def display_partitions(dev_path: str) -> None:
@@ -159,9 +160,7 @@ def display_partitions(dev_path: str) -> None:
     try:
         subprocess.run(['parted', '--script', dev_path, 'print'], check=True)
     except FileNotFoundError as exc:
-        raise FileNotFoundError(f'{Colors.RED}parted is not installed{Colors.RESET}') from exc
-    except subprocess.CalledProcessError:
-        sys.exit(1)
+        raise CommandNotFoundError(f'command not found: {exc.filename}') from exc
 
 
 def display_changes(config: dict, dev_path: str) -> None:
@@ -178,16 +177,12 @@ def display_changes(config: dict, dev_path: str) -> None:
           f'Partition Table: {Colors.BLUE}{config.get("partitionScheme")}{Colors.RESET}')
 
     dev = dev_path.replace('/dev/', '')
-    path = Path(f'/sys/block/{dev}/size')
-    if not path.is_file():
-        raise FileNotFoundError(f'{Colors.RED}unable to get size of {dev}{Colors.RESET}')
-
     unit = config.get('unit')
     for i, partition in enumerate(config.get('partitions')):
         start = to_bytes(size=partition.get('start'), size_unit=unit)
         end = partition.get('end')
         if end == -1:
-            with path.open(mode='r', encoding=UTF8) as file:
+            with Path(f'/sys/block/{dev}/size').open(mode='r', encoding=UTF8) as file:
                 end = 512 * int(file.read())
         else:
             end = to_bytes(size=end, size_unit=unit)
@@ -211,9 +206,10 @@ def to_bytes(size: int, size_unit: str) -> int:
         size_unit: str
             The unit that the size is being converted from.
     '''
-    unit = UNIT_SYSTEM.get(size_unit)
-    if not unit:
-        raise InvalidUnitError(f'invalid unit {size_unit}')
+    try:
+        unit = UNIT_SYSTEM[size_unit]
+    except KeyError as exc:
+        raise InvalidUnitError(f'invalid unit {size_unit}') from exc
 
     units = {
         'B': 1,
@@ -236,9 +232,10 @@ def convert_size(size_bytes: int, size_unit: str) -> tuple[int, str]:
         size_unit: str
             The original unit being used to parition the device.
     '''
-    unit = UNIT_SYSTEM.get(size_unit)
-    if not unit:
-        raise InvalidUnitError(f'invalid unit {size_unit}')
+    try:
+        unit = UNIT_SYSTEM[size_unit]
+    except KeyError as exc:
+        raise InvalidUnitError(f'invalid unit {size_unit}') from exc
 
     i = int(math.floor(math.log(size_bytes, unit)))
     size = int(round(size_bytes / math.pow(unit, i), 2))
@@ -282,9 +279,7 @@ def partition_dev(config: dict, dev_path: str):
     try:
         subprocess.run(cmd, check=True)
     except FileNotFoundError as exc:
-        raise FileNotFoundError(f'{Colors.RED}parted is not installed{Colors.RESET}') from exc
-    except subprocess.CalledProcessError:
-        sys.exit(1)
+        raise CommandNotFoundError(f'command not found: {exc.filename}') from exc
 
 
 def unmount_dev(dev_path: str):
@@ -301,7 +296,27 @@ def unmount_dev(dev_path: str):
         for mount in proc.stdout.decode().strip().splitlines():
             subprocess.run(['umount', mount], check=True)
     except FileNotFoundError as exc:
-        raise FileNotFoundError(f'{Colors.RED}umount is not installed{Colors.RESET}') from exc
+        raise CommandNotFoundError(f'command not found: {exc.filename}') from exc
+
+
+def format_partition(config: dict, dev_path: str):
+    '''TODO: add docstring.'''
+    for i, partition in enumerate(config.get('partitions')):
+        partition_path = f'{dev_path}{i + 1}'
+        if partition.get('encrypted'):
+            encrypt_partition(partition_path, passphrase=os.environ.get(LUKS_PASSPHRASE))
+
+
+def encrypt_partition(partition_path: str, passphrase: str):
+    '''TODO: add docstring.'''
+    if not passphrase:
+        raise ValueError(f'{Colors.RED}{LUKS_PASSPHRASE} not set{Colors.RESET}')
+
+    try:
+        subprocess.run(['cryptsetup', '--verbose', 'luksFormat', partition_path],
+                       check=True, stdin=passphrase)
+    except FileNotFoundError as exc:
+        raise FileNotFoundError(f'{Colors.RED}cryptsetup is not installed{Colors.RESET}') from exc
     except subprocess.CalledProcessError:
         sys.exit(1)
 
