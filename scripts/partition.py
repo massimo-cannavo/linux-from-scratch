@@ -150,7 +150,7 @@ def display_partitions(dev_path: str) -> None:
 
     Parameters
         dev_path: str
-            path of device to display partition table.
+            Path of the device to display the partition table.
     '''
     try:
         subprocess.run(['parted', '--script', dev_path, 'print'], check=True)
@@ -245,7 +245,7 @@ def convert_size(size_bytes: int, size_unit: str) -> tuple[int, str]:
     return (size, f'{units[i]}{suffix}')
 
 
-def partition_dev(config: dict, dev_path: str):
+def partition_dev(config: dict, dev_path: str) -> None:
     '''
     Partitions a device using a config parsed from a YAML file.
 
@@ -277,7 +277,7 @@ def partition_dev(config: dict, dev_path: str):
         raise CommandNotFoundError(f'command not found: {exc.filename}') from exc
 
 
-def unmount_dev(dev_path: str):
+def unmount_dev(dev_path: str) -> None:
     '''
     Unmounts all filesystems from a given device.
 
@@ -294,7 +294,7 @@ def unmount_dev(dev_path: str):
         raise CommandNotFoundError(f'command not found: {exc.filename}') from exc
 
 
-def format_partition(config: dict, dev_path: str):
+def format_partition(config: dict, dev_path: str) -> None:
     '''TODO: add docstring.'''
     for i, partition in enumerate(config.get('partitions')):
         partition_path = f'{dev_path}{i + 1}'
@@ -302,18 +302,24 @@ def format_partition(config: dict, dev_path: str):
             encrypt_partition(partition_path, passphrase=os.environ.get(LUKS_PASSPHRASE))
 
 
-def encrypt_partition(partition_path: str, passphrase: str):
-    '''TODO: add docstring.'''
+def encrypt_partition(partition_path: str, passphrase: str) -> None:
+    '''
+    Encrypts a partition using LUKS encryption.
+
+    Parameters
+        partition_path: str
+            Path of the partition to encrypt.
+        passphrase: str
+            The passphrase used to encrypt the partition.
+    '''
     if not passphrase:
-        raise ValueError(f'{Colors.RED}{LUKS_PASSPHRASE} not set{Colors.RESET}')
+        raise ValueError(f'{Colors.RED}LUKS_PASSPHRASE not set{Colors.RESET}')
 
     try:
         subprocess.run(['cryptsetup', '--verbose', 'luksFormat', partition_path],
                        check=True, stdin=passphrase)
     except FileNotFoundError as exc:
-        raise FileNotFoundError(f'{Colors.RED}cryptsetup is not installed{Colors.RESET}') from exc
-    except subprocess.CalledProcessError:
-        sys.exit(1)
+        raise CommandNotFoundError(f'command not found: {exc.filename}') from exc
 
 
 if __name__ == '__main__':
