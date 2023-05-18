@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 import subprocess
 import sys
+import time
 from typing import Any
 
 from jsonschema import validate
@@ -21,6 +22,17 @@ UTF8 = 'utf-8'
 UNIT_SYSTEM = {
     **dict.fromkeys(['B', 'KiB', 'MiB', 'GiB', 'TiB'], 1024),
     **dict.fromkeys(['KB', 'MB', 'GB', 'TB'], 1000)
+}
+MKFS_CMD = {
+    'ext2': ['mkfs.ext2'],
+    'ext3': ['mkfs.ext3'],
+    'ext4': ['mkfs.ext4'],
+    'xfs': ['mkfs.xfs'],
+    'btrfs': ['mkfs.btrfs'],
+    'reiserfs': ['mkreiserfs'],
+    'fat12': ['mkfs.fat', '-F', '12'],
+    'fat16': ['mkfs.fat', '-F', '16'],
+    'fat32': ['mkfs.fat', '-F', '32']
 }
 
 
@@ -67,6 +79,7 @@ def main() -> None:
             sys.exit()
 
         partition_dev(config, dev_path)
+        format_partition(config, dev_path)
     except yaml.YAMLError as exc:
         if hasattr(exc, 'problem_mark'):
             error = f'{exc.problem}\n{exc.problem_mark}'
@@ -78,7 +91,7 @@ def main() -> None:
         handle_error(error=f'no such file or directory: {exc.filename}')
     except ValidationError as exc:
         handle_error(error=exc.message)
-    except (DeviceNotFoundError, CommandNotFoundError, InvalidUnitError) as exc:
+    except (DeviceNotFoundError, CommandNotFoundError, InvalidUnitError, ValueError) as exc:
         handle_error(error=exc)
     except subprocess.CalledProcessError as exc:
         handle_error()
@@ -295,14 +308,37 @@ def unmount_dev(dev_path: str) -> None:
 
 
 def format_partition(config: dict, dev_path: str) -> None:
-    '''TODO: add docstring.'''
+    '''
+    Formats a partition with the specified filesystem.
+
+    Parameters:
+        config: dict
+            Config used to format the partition.
+        dev_path: str
+            Path of the device where the partitions exist.
+    '''
     for i, partition in enumerate(config.get('partitions')):
         partition_path = f'{dev_path}{i + 1}'
-        if partition.get('encrypted'):
-            encrypt_partition(partition_path, passphrase=os.environ.get(LUKS_PASSPHRASE))
+        encrypted = partition.get('encrypted')
+        if encrypted:
+            partition_name = partition.get('name')
+            encrypt_partition(partition_path, partition_name,
+                              passphrase=os.environ.get(LUKS_PASSPHRASE))
+            partition_path = f'/dev/mapper/{partition_name}'
+
+        cmd = MKFS_CMD.get(partition.get('filesystem'))
+        cmd.append(partition_path)
+
+        try:
+            subprocess.run(cmd, check=True)
+            if encrypted:
+                time.sleep(5)
+                subprocess.run(['cryptsetup', 'close', partition_name], check=True)
+        except FileNotFoundError as exc:
+            raise CommandNotFoundError(f'command not found: {exc.filename}') from exc
 
 
-def encrypt_partition(partition_path: str, passphrase: str) -> None:
+def encrypt_partition(partition_path: str, partition_name: str, passphrase: str) -> None:
     '''
     Encrypts a partition using LUKS encryption.
 
@@ -313,11 +349,13 @@ def encrypt_partition(partition_path: str, passphrase: str) -> None:
             The passphrase used to encrypt the partition.
     '''
     if not passphrase:
-        raise ValueError(f'{Colors.RED}LUKS_PASSPHRASE not set{Colors.RESET}')
+        raise ValueError('LUKS_PASSPHRASE not set')
 
     try:
         subprocess.run(['cryptsetup', '--verbose', 'luksFormat', partition_path],
-                       check=True, stdin=passphrase)
+                        check=True, input=passphrase.encode())
+        subprocess.run(['cryptsetup', 'open', partition_path, partition_name],
+                        check=True, input=passphrase.encode())
     except FileNotFoundError as exc:
         raise CommandNotFoundError(f'command not found: {exc.filename}') from exc
 
