@@ -29,7 +29,7 @@ To determine the Serial ID of your device, execute the following command:
 $ udevadm info --name=/dev/sda | grep 'ID_SERIAL='
 ```
 
-After making the changes to the file, you can test the changes using the --what-if flag.
+After making the changes to the file, you can test the changes using the **--what-if** flag.
 This allows you to preview the operations of the script. This is a recommended step and
 should not be skipped. It's better to be safe then sorry.
 
