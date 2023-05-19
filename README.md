@@ -1,6 +1,6 @@
 # Linux From Scratch
 
-![Linux Log](img/linux.png)
+![Linux Logo](img/linux.png)
 
 [LFS](https://www.linuxfromscratch.org) allows you to create very compact Linux systems. With other distributions you are often forced to install a great many programs you neither use nor understand. These programs waste resources. You may argue that with today's hard drives and CPUs, wasted resources are no longer a consideration. Sometimes, however, you are still constrained by the system's size, if nothing else. Think about bootable CDs, USB sticks, and embedded systems. Those are areas where LFS can be beneficial.
 
