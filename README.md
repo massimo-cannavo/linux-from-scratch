@@ -37,6 +37,20 @@ should not be skipped. It's better to be safe then sorry.
 $ sudo python partition.py --what-if
 ```
 
+The **partition.py** script supports encrypting a partition by using an environment variable.
+To set the LUKS passhprase, execute the following command:
+
+```sh
+$ export LUKS_PASSPHRASE='SECRET'
+```
+
+You can tuck away the passphrase in a hidden environment file. That way you can use it in
+all sessions.
+
+```sh
+~/.bashrc.d/env.bashrc
+```
+
 **Note**: before proceeding, make sure you have identified the correct device to partition.
 The device will be wiped completely, use at your own risk.
 
