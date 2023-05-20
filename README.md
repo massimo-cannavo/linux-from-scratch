@@ -46,7 +46,7 @@ $ export LUKS_PASSPHRASE='SECRET'
 
 You can tuck away the passphrase in a hidden environment file. That way you can use it in
 all sessions. For example you could add the export statement above in
-*~/.bashrc.d/env.bashrc*.
+`~/.bashrc.d/env.bashrc`.
 
 **Note**: before proceeding, make sure you have identified the correct device to partition.
 The device will be wiped completely, use at your own risk.
