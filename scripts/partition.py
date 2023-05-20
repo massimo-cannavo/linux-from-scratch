@@ -106,7 +106,7 @@ def handle_error(error: Any = None) -> None:
             The error message to print to the console.
     '''
     if error:
-        print(f'{Colors.RED}[ ERROR ]{Colors.RESET} {error}')
+        print(f'{Colors.RED}[ ERROR ]{Colors.RESET} {error}', file=sys.stderr)
 
     sys.exit(1)
 
