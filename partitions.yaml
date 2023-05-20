@@ -3,7 +3,7 @@ device: PNY_USB_3.2.1_FD_071C2B4C04401401-0:0
 partitionScheme: gpt
 unit: MiB
 partitions:
-  - name: boot
+  boot:
     filesystem: fat32
     flags:
       - boot
@@ -11,7 +11,7 @@ partitions:
     start: 1
     end: 513
     encrypted: False
-  - name: root
+  root:
     filesystem: ext4
     start: 514
     end: -1

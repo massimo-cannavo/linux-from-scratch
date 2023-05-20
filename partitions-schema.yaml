@@ -46,21 +46,17 @@ properties:
       - TB
     type: string
   partitions:
-    description: Array of partitions to create.
-    type: array
-    items:
+    description: Object of partitions to create.
+    type: object
+    additionalProperties:
       type: object
       additionalProperties: false
       required:
-        - name
         - filesystem
         - start
         - end
         - encrypted
       properties:
-        name:
-          description: A label to attach to the partition.
-          type: string
         filesystem:
           description: The filesystem to format the partition.
           enum:
