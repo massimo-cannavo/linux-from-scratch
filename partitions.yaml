@@ -4,6 +4,7 @@ partitionScheme: gpt
 unit: MiB
 partitions:
   boot:
+    number: 1
     filesystem: fat32
     flags:
       - boot
@@ -12,6 +13,7 @@ partitions:
     end: 513
     encrypted: False
   root:
+    number: 2
     filesystem: ext4
     start: 514
     end: -1

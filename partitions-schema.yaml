@@ -52,11 +52,15 @@ properties:
       type: object
       additionalProperties: false
       required:
+        - number
         - filesystem
         - start
         - end
         - encrypted
       properties:
+        number:
+          description: Partition number in the partition table.
+          type: integer
         filesystem:
           description: The filesystem to format the partition.
           enum:

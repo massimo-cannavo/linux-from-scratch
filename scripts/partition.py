@@ -187,7 +187,7 @@ def display_changes(config: dict, dev_path: str) -> None:
     dev = dev_path.replace('/dev/', '')
     unit = config.get('unit')
     partitions = config.get('partitions', {})
-    for i, partition_name in enumerate(partitions):
+    for partition_name in partitions:
         partition = partitions.get(partition_name, {})
         start = to_bytes(size=partition.get('start'), size_unit=unit)
         end = partition.get('end')
@@ -198,7 +198,7 @@ def display_changes(config: dict, dev_path: str) -> None:
             end = to_bytes(size=end, size_unit=unit)
 
         size, unit = convert_size(size_bytes=end - start, size_unit=unit)
-        print(f'Partition {i + 1}\n'
+        print(f'Partition {partition.get("number")}\n'
               f'  Name: {Colors.BLUE}{partition_name}{Colors.RESET}\n'
               f'  Filesystem: {Colors.BLUE}{partition.get("filesystem")}{Colors.RESET}\n'
               f'  Start: {Colors.BLUE}{partition.get("start")}{Colors.RESET}\n'
@@ -276,7 +276,7 @@ def partition_dev(config: dict, dev_path: str) -> None:
     cmd = ['parted', '--script', '--align', 'optimal', dev_path,
            'mklabel', partition_scheme, 'unit', unit]
     partitions = config.get('partitions', {})
-    for i, partition_name in enumerate(partitions):
+    for partition_name in partitions:
         partition = partitions.get(partition_name, {})
         cmd.extend(['mkpart', partition_name, partition.get('filesystem'),
                     str(partition.get('start'))])
@@ -286,7 +286,7 @@ def partition_dev(config: dict, dev_path: str) -> None:
 
         cmd.append(str(end))
         for flag in partition.get('flags', []):
-            cmd.extend(['set', str(i + 1), flag, 'on'])
+            cmd.extend(['set', str(partition.get('number')), flag, 'on'])
 
     try:
         subprocess.run(cmd, check=True)
@@ -322,9 +322,9 @@ def format_partition(config: dict, dev_path: str) -> None:
             Path of the device where the partitions exist.
     '''
     partitions = config.get('partitions', {})
-    for i, partition_name in enumerate(partitions):
+    for partition_name in partitions:
         partition = partitions.get(partition_name, {})
-        partition_path = f'{dev_path}{i + 1}'
+        partition_path = f'{dev_path}{partition.get("number")}'
         encrypted = partition.get('encrypted')
         if encrypted:
             encrypt_partition(partition_path, partition_name,
