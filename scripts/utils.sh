@@ -11,7 +11,7 @@ readonly RESET="\033[m"
 
 is_root() {
   if [[ $EUID -ne 0 ]]; then
-    echo -e "${RED}run as root${RESET}"
+    echo -e "${RED}[ ERROR ]${RESET} run as root"
     exit 1
   fi
 }
