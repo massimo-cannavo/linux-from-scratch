@@ -354,7 +354,7 @@ def encrypt_partition(partition_path: str, partition_name: str, passphrase: str)
             The passphrase used to encrypt the partition.
     '''
     if not passphrase:
-        raise ValueError('LUKS_PASSPHRASE not set')
+        raise ValueError(f'{LUKS_PASSPHRASE} not set')
 
     try:
         subprocess.run(['cryptsetup', '--verbose', 'luksFormat', partition_path],
