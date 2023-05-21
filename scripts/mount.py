@@ -4,8 +4,8 @@ from pathlib import Path
 import subprocess
 import yaml
 
-from partition import (CONFIG_FILE, LUKS_PASSPHRASE, CommandNotFoundError, get_dev_path,
-                       handle_error, parse_config, ValidationError)
+from partition import (CONFIG_FILE, LUKS_PASSPHRASE, CommandNotFoundError, DeviceNotFoundError,
+                       get_dev_path, handle_error, parse_config, ValidationError)
 
 LFS_PATH = Path('/mnt/lfs')
 
@@ -36,7 +36,7 @@ def main() -> None:
         handle_error(error=f'no such file or directory: {exc.filename}')
     except ValidationError as exc:
         handle_error(error=exc.message)
-    except (PartitionNotFoundError, CommandNotFoundError) as exc:
+    except (DeviceNotFoundError, PartitionNotFoundError, CommandNotFoundError) as exc:
         handle_error(error=exc)
 
 
