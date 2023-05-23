@@ -1,4 +1,5 @@
 '''Mounts the partitions defined in the partitions.yaml file.'''
+import argparse
 import os
 from pathlib import Path
 import subprocess
@@ -18,12 +19,13 @@ class PartitionNotFoundError(Exception):
 
 def main() -> None:
     '''The main entrypoint of the script.'''
+    args = parse_args()
     if os.geteuid() != 0:
         handle_error(error='run as root')
 
     try:
-        config = parse_config(filename=CONFIG_FILE)
-        dev_path = get_dev_path(serial_id=config.get('device'))
+        config = parse_config(args.file)
+        dev_path = get_dev_path(config.get('device'))
         mount_dev(config, dev_path)
     except yaml.YAMLError as exc:
         if hasattr(exc, 'problem_mark'):
@@ -38,6 +40,17 @@ def main() -> None:
         handle_error(error=exc.message)
     except (DeviceNotFoundError, PartitionNotFoundError, CommandNotFoundError) as exc:
         handle_error(error=exc)
+
+
+def parse_args() -> argparse.Namespace:
+    '''Parse command line arguments.'''
+    parser = argparse.ArgumentParser(description='Mounts partitions from a YAML file.')
+    parser.add_argument('-f', '--file',
+                        default=CONFIG_FILE,
+                        help='reads from FILE instead of the default (partitions.yml)',
+                        type=str)
+    args = parser.parse_args()
+    return args
 
 
 def mount_dev(config: dict, dev_path: str) -> None:

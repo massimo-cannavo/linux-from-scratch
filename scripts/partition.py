@@ -97,20 +97,6 @@ def main() -> None:
         handle_error()
 
 
-def handle_error(error: Any = None) -> None:
-    '''
-    Error handling that gracefuly terminates the program.
-
-    Parameters
-        error: Any
-            The error message to print to the console.
-    '''
-    if error:
-        print(f'{Colors.RED}[ ERROR ]{Colors.RESET} {error}', file=sys.stderr)
-
-    sys.exit(1)
-
-
 def parse_args() -> argparse.Namespace:
     '''Parse command line arguments.'''
     parser = argparse.ArgumentParser(description='Partitions a device from a YAML file.')
@@ -123,6 +109,20 @@ def parse_args() -> argparse.Namespace:
                         help='displays a preview of the operations to perform')
     args = parser.parse_args()
     return args
+
+
+def handle_error(error: Any = None) -> None:
+    '''
+    Error handling that gracefuly terminates the program.
+
+    Parameters
+        error: Any
+            The error message to print to the console.
+    '''
+    if error:
+        print(f'{Colors.RED}[ ERROR ]{Colors.RESET} {error}', file=sys.stderr)
+
+    sys.exit(1)
 
 
 def parse_config(filename: str) -> dict:
