@@ -102,7 +102,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description='Partitions a device from a YAML file.')
     parser.add_argument('-f', '--file',
                         default=CONFIG_FILE,
-                        help='reads from FILE instead of the default (partitions.yml)',
+                        help=f'reads from FILE instead of {os.path.basename(CONFIG_FILE)}',
                         type=str)
     parser.add_argument('--what-if',
                         action='store_true',
