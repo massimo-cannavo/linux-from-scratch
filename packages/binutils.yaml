@@ -1,5 +1,5 @@
 name: binutils
-version: 2.40
+version: "2.40"
 source: https://sourceware.org/pub/binutils/releases/binutils-2.40.tar.xz
 description: |
   The GNU Binutils are a collection of binary tools. Most of these programs use BFD,
