@@ -27,7 +27,7 @@ for i in bin lib sbin; do
   [[ ! -e $symlink ]] && ln -sv usr/$i $symlink
 done
 
-chown -v "$SUDO_USER" $LFS/tools
+chown -v "$SUDO_USER" $LFS/{tools,sources}
 chown -v "$SUDO_USER" $LFS/{etc,var,usr}
 chown -v "$SUDO_USER" $LFS/usr/{bin,lib,sbin}
 case $ARCH in
