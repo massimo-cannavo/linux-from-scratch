@@ -72,7 +72,7 @@ def download_pkg(url: str, download_path: str) -> str:
         download_path: str
             The path on the filesystem to download the package.
     '''
-    pkg_file = url.split("/")[-1]
+    pkg_file = url.split('/')[-1]
     pkg_path = f'{download_path}/{pkg_file}'
     if Path(pkg_path).exists():
         print(f'{pkg_file} exists, skipping download')
@@ -88,6 +88,7 @@ def download_pkg(url: str, download_path: str) -> str:
                 file.write(chunk)
 
     return sha512.hexdigest()
+
 
 if __name__ == '__main__':
     main()
