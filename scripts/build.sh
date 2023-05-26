@@ -4,10 +4,9 @@
 
 # Exit when any command fails.
 set -e
-umask 022
 
-ARCH=$(uname -m)
-readonly ARCH
+source utils.sh
+umask 022
 
 export LFS=/mnt/lfs
 export LFS_TGT=$ARCH-lfs-linux-gnu
@@ -36,8 +35,8 @@ case $ARCH in
     ;;
 esac
 
-# pushd .
-#   cd ../packages/cross-toolchain
-#   # shellcheck disable=SC1091
-#   source binutils.sh
-# popd
+pushdq .
+  cd ../packages/cross-toolchain
+  # shellcheck disable=SC1091
+  source binutils.sh
+popdq

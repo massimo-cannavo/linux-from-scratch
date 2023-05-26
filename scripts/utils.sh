@@ -9,9 +9,20 @@ readonly YELLOW="\033[1;33m"
 readonly BLUE="\033[1;34m"
 readonly RESET="\033[m"
 
+ARCH=$(uname -m)
+readonly ARCH
+
 is_root() {
   if [[ $EUID -ne 0 ]]; then
     echo -e "${RED}[ ERROR ]${RESET} run as root"
     exit 1
   fi
+}
+
+pushdq() {
+  pushd "$@" > /dev/null || exit
+}
+
+popdq() {
+  popd > /dev/null || exit
 }
