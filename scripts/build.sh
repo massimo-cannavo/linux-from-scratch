@@ -1,22 +1,25 @@
 #!/usr/bin/env bash
 #
-# TODO: add info about script
+# The main entrypoint script for building Linux From Scratch.
 
 # Exit when any command fails.
 set -e
-
-source utils.sh
 umask 022
+
+ARCH=$(uname -m)
+readonly ARCH
 
 export LFS=/mnt/lfs
 export LFS_TGT=$ARCH-lfs-linux-gnu
 export LC_ALL=POSIX
 export PATH=$LFS/tools/bin:$PATH
 export CONFIG_SITE=$LFS/usr/share/config.site
+export LFS_SOURCES="$LFS/sources"
 
-is_root
 if ! grep -q $LFS /proc/mounts; then
-  python mount.py
+  sudo -E python mount.py
+  sudo chown -v "$USER" $LFS
+  [[ -d $LFS/boot ]] && sudo chown -v "$USER" $LFS/boot
 fi
 
 mkdir -pv $LFS/sources
@@ -27,12 +30,14 @@ for i in bin lib sbin; do
   [[ ! -e $symlink ]] && ln -sv usr/$i $symlink
 done
 
-chown -v "$SUDO_USER" $LFS/{tools,sources}
-chown -v "$SUDO_USER" $LFS/{etc,var,usr}
-chown -v "$SUDO_USER" $LFS/usr/{bin,lib,sbin}
 case $ARCH in
   x86_64)
     mkdir -pv $LFS/lib64
-    chown -v "$SUDO_USER" $LFS/lib64
     ;;
 esac
+
+# pushd .
+#   cd ../packages/cross-toolchain
+#   # shellcheck disable=SC1091
+#   source binutils.sh
+# popd

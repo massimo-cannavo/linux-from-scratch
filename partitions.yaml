@@ -5,7 +5,7 @@ unit: MiB
 partitions:
   boot:
     number: 1
-    filesystem: fat32
+    filesystem: ext2
     flags:
       - boot
       - esp
