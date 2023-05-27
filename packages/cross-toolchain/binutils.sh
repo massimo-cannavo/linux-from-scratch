@@ -11,7 +11,6 @@ PKG_FILE="$(
     | xargs basename              \
     | sed 's/\.tar\.xz//g'
 )"
-readonly PKG_FILE
 
 python ../../scripts/download.py -f ../binutils.yaml
 pushdq .

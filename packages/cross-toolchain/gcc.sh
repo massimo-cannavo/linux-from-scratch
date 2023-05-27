@@ -5,8 +5,9 @@
 # Exit when any command fails.
 set -e
 
-SCRIPTS_PATH=$(realpath ../../scripts)
-export SCRIPTS_PATH
+SCRIPTS=$(realpath ../../scripts)
+export SCRIPTS
+export CROSS_TOOLCHAIN=$PWD
 
 PKG_FILE="$(
   grep 'source:' ../gcc.yaml \
@@ -14,14 +15,13 @@ PKG_FILE="$(
     | xargs basename         \
     | sed 's/\.tar\.xz//g'
 )"
-readonly PKG_FILE
 
-python ../../scripts/download.py -f ../gcc.yaml
+python "$SCRIPTS/download.py" -f ../gcc.yaml
 pushdq .
   cd "$LFS_SOURCES/$PKG_FILE"
-  source gmp.sh
-  source mpc.sh
-  source mpfr.sh
+  source "$CROSS_TOOLCHAIN/gmp.sh"
+  source "$CROSS_TOOLCHAIN/mpc.sh"
+  source "$CROSS_TOOLCHAIN/mpfr.sh"
 
   case $ARCH in
     x86_64)

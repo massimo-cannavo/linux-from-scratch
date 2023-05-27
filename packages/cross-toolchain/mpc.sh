@@ -5,13 +5,13 @@
 # Exit when any command fails.
 set -e
 
+YAML_FILE=$CROSS_TOOLCHAIN/../mpc.yaml
 PKG_FILE="$(
-  grep 'source:' ../mpc.yaml \
-    | cut -d ':' -f 2-3      \
-    | xargs basename         \
+  grep 'source:' "$YAML_FILE" \
+    | cut -d ':' -f 2-3       \
+    | xargs basename          \
     | sed 's/\.tar\.gz//g'
 )"
-readonly PKG_FILE
 
-python "$SCRIPTS_PATH/download.py" -f ../mpc.yaml
-mv -v "$PKG_FILE" mpc
+python "$SCRIPTS/download.py" -f "$YAML_FILE"
+mv -v "$LFS_SOURCES/$PKG_FILE" mpc
