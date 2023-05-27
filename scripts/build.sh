@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC1091
 #
 # The main entrypoint script for building Linux From Scratch.
 
@@ -37,6 +38,6 @@ esac
 
 pushdq .
   cd ../packages/cross-toolchain
-  # shellcheck disable=SC1091
   source binutils.sh
+  source gcc.sh
 popdq

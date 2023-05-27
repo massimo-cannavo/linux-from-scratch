@@ -1,0 +1,11 @@
+name: gmp
+version: "6.2.1"
+source: https://ftp.gnu.org/gnu/gmp/gmp-6.2.1.tar.xz
+description: |
+  GMP is a free library for arbitrary precision arithmetic, operating on signed
+  integers, rational numbers, and floating-point numbers. There is no practical
+  limit to the precision except the ones implied by the available memory in the
+  machine GMP runs on. GMP has a rich set of functions, and the functions have a
+  regular interface.
+checksum:
+  c99be0950a1d05a0297d65641dd35b75b74466f7bf03c9e8a99895a3b2f9a0856cd17887738fa51cf7499781b65c049769271cbcb77d057d2e9f1ec52e07dd84
