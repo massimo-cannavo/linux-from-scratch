@@ -21,6 +21,22 @@ properties:
   description:
     description: Description of the package.
     type: string
+  dependencies:
+    description: Array of dependencies of the package.
+    type: array
+    items:
+      type: object
+      additionalProperties: false
+      required:
+        - name
+        - version
+      properties:
+        name:
+          description: Name of the dependency.
+          type: string
+        version:
+          description: Version of the dependency.
+          type: string
   checksum:
     description: SHA-512 checksum used to verify the integrity of the package.
     type: string
