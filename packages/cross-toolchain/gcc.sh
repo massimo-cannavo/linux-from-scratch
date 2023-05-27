@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Builds gcc Pass 1 as part of the cross-compiler build.
+# Builds GCC Pass 1 as part of the cross-compiler build.
 
 # Exit when any command fails.
 set -e
