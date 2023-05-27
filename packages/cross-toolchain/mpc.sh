@@ -14,4 +14,6 @@ PKG_FILE="$(
 )"
 
 python "$SCRIPTS/download.py" -f "$YAML_FILE"
-mv -v "$LFS_SOURCES/$PKG_FILE" mpc
+if [[ -f $LFS_SOURCES/$PKG_FILE ]]; then
+  mv -v "$LFS_SOURCES/$PKG_FILE" mpc
+fi
