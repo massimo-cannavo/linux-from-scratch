@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2185
 #
 # Simple script to check that the host system has all the appropriate versions.
 
@@ -27,7 +28,6 @@ fi
 
 echo -n "Coreutils: "; chown --version | head -n1 | cut -d")" -f2
 diff --version | head -n1
-# shellcheck disable=SC2185
 find --version | head -n1
 gawk --version | head -n1
 
