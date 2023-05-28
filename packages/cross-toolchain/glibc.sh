@@ -5,15 +5,15 @@
 # Exit when any command fails.
 set -e
 
+YAML_FILE=../glibc.yaml
 PKG_FILE="$(
-  grep 'source:' ../glibc.yaml \
-    | cut -d ':' -f 2-3        \
-    | xargs basename           \
+  yq '.source' $YAML_FILE  \
+    | xargs basename       \
     | sed 's/\.tar\.xz//g'
 )"
-PATCHES=$(yq '.patches[]' ../glibc.yaml)
+PATCHES=$(yq '.patches[]' $YAML_FILE)
 
-python ../../scripts/download.py -f ../glibc.yaml
+python ../../scripts/download.py -f $YAML_FILE
 pushdq .
   cd "$LFS_SOURCES/$PKG_FILE"
   case $(uname -m) in
@@ -35,12 +35,12 @@ pushdq .
   cd build
   echo "rootsbindir=/usr/sbin" > configparms
 
-  ../configure --prefix=/usr               \
-      --host="$LFS_TGT"                    \
-      --build="$(../scripts/config.guess)" \
-      --enable-kernel=3.2                  \
-      --with-headers="$LFS/usr/include"    \
-      libc_cv_slibdir=/usr/lib
+  ../configure --prefix=/usr                        \
+               --host="$LFS_TGT"                    \
+               --build="$(../scripts/config.guess)" \
+               --enable-kernel=3.2                  \
+               --with-headers="$LFS/usr/include"    \
+               libc_cv_slibdir=/usr/lib
 
   make -j"$(nproc)"
   make DESTDIR="$LFS" install

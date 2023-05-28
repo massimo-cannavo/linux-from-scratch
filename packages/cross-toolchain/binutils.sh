@@ -5,14 +5,14 @@
 # Exit when any command fails.
 set -e
 
+YAML_FILE=../binutils.yaml
 PKG_FILE="$(
-  grep 'source:' ../binutils.yaml \
-    | cut -d ':' -f 2-3           \
-    | xargs basename              \
+  yq '.source' $YAML_FILE  \
+    | xargs basename       \
     | sed 's/\.tar\.xz//g'
 )"
 
-python ../../scripts/download.py -f ../binutils.yaml
+python ../../scripts/download.py -f $YAML_FILE
 pushdq .
   cd "$LFS_SOURCES/$PKG_FILE"
   mkdir -pv build
@@ -24,6 +24,7 @@ pushdq .
                --disable-nls         \
                --enable-gprofng=no   \
                --disable-werror
+
   make -j"$(nproc)"
   make install
 popdq

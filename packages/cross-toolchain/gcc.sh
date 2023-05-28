@@ -9,14 +9,15 @@ SCRIPTS=$(realpath ../../scripts)
 export SCRIPTS
 export CROSS_TOOLCHAIN=$PWD
 
+YAML_FILE=../gcc.yaml
 PKG_FILE="$(
-  grep 'source:' ../gcc.yaml \
-    | cut -d ':' -f 2-3      \
-    | xargs basename         \
+  yq '.source' $YAML_FILE  \
+    | xargs basename       \
     | sed 's/\.tar\.xz//g'
 )"
+GLIBC_VERSION=$(yq '.version' ../glibc.yaml)
 
-python "$SCRIPTS/download.py" -f ../gcc.yaml
+python "$SCRIPTS/download.py" -f $YAML_FILE
 pushdq .
   cd "$LFS_SOURCES/$PKG_FILE"
   source "$CROSS_TOOLCHAIN/gmp.sh"
@@ -32,25 +33,26 @@ pushdq .
   mkdir -pv build
   cd build
 
-  ../configure --target="$LFS_TGT"       \
-               --prefix="$LFS/tools"     \
-               --with-glibc-version=2.37 \
-               --with-sysroot="$LFS"     \
-               --with-newlib             \
-               --without-headers         \
-               --enable-default-pie      \
-               --enable-default-ssp      \
-               --disable-nls             \
-               --disable-shared          \
-               --disable-multilib        \
-               --disable-threads         \
-               --disable-libatomic       \
-               --disable-libgomp         \
-               --disable-libquadmath     \
-               --disable-libssp          \
-               --disable-libvtv          \
-               --disable-libstdcxx       \
+  ../configure --target="$LFS_TGT"                   \
+               --prefix="$LFS/tools"                 \
+               --with-glibc-version="$GLIBC_VERSION" \
+               --with-sysroot="$LFS"                 \
+               --with-newlib                         \
+               --without-headers                     \
+               --enable-default-pie                  \
+               --enable-default-ssp                  \
+               --disable-nls                         \
+               --disable-shared                      \
+               --disable-multilib                    \
+               --disable-threads                     \
+               --disable-libatomic                   \
+               --disable-libgomp                     \
+               --disable-libquadmath                 \
+               --disable-libssp                      \
+               --disable-libvtv                      \
+               --disable-libstdcxx                   \
                --enable-languages=c,c++
+
   make -j"$(nproc)"
   make install
 

@@ -5,14 +5,14 @@
 # Exit when any command fails.
 set -e
 
+YAML_FILE=../linux.yaml
 PKG_FILE="$(
-  grep 'source:' ../linux.yaml \
-    | cut -d ':' -f 2-3        \
-    | xargs basename           \
+  yq '.source' $YAML_FILE  \
+    | xargs basename       \
     | sed 's/\.tar\.xz//g'
 )"
 
-python ../../scripts/download.py -f ../linux.yaml
+python ../../scripts/download.py -f $YAML_FILE
 pushdq .
   cd "$LFS_SOURCES/$PKG_FILE"
   make mrproper

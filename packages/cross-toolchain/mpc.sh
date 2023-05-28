@@ -7,9 +7,8 @@ set -e
 
 YAML_FILE=$CROSS_TOOLCHAIN/../mpc.yaml
 PKG_FILE="$(
-  grep 'source:' "$YAML_FILE" \
-    | cut -d ':' -f 2-3       \
-    | xargs basename          \
+  yq '.source' "$YAML_FILE" \
+    | xargs basename        \
     | sed 's/\.tar\.gz//g'
 )"
 
