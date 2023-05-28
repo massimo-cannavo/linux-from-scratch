@@ -52,4 +52,5 @@ pushdq .
   source bash.sh
   source coreutils.sh
   source diffutils.sh
+  source file.sh
 popdq
