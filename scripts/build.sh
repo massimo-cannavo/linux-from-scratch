@@ -36,16 +36,17 @@ case $ARCH in
     ;;
 esac
 
-pushdq .
-  cd ../packages/cross-toolchain
-  source binutils.sh
-  source gcc.sh
-  source linux-api-headers.sh
-  source glibc.sh
-  source libstdc++.sh
-popdq
+# pushdq .
+#   cd ../packages/cross-toolchain
+#   source binutils.sh
+#   source gcc.sh
+#   source linux-api-headers.sh
+#   source glibc.sh
+#   source libstdc++.sh
+# popdq
 
 pushdq .
   cd ../packages/tools
   source m4.sh
+  source ncurses.sh
 popdq
