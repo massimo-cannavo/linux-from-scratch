@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Builds coreutils as part of the Cross Compiling temporary tools.
+# Builds Coreutils as part of the Cross Compiling temporary tools.
 
 # Exit when any command fails.
 set -e
