@@ -55,6 +55,7 @@ sed --version | head -n1
 tar --version | head -n1
 makeinfo --version | head -n1
 xz --version | head -n1
+yq --version
 
 echo "int main(){}" > dummy.c && g++ -o dummy dummy.c
 if [[ -x dummy ]]; then

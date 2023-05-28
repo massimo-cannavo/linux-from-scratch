@@ -41,4 +41,5 @@ pushdq .
   source binutils.sh
   source gcc.sh
   source linux-api-headers.sh
+  source glibc.sh
 popdq
