@@ -37,6 +37,11 @@ properties:
         version:
           description: Version of the dependency.
           type: string
+  patches:
+    description: Array of patches to apply.
+    type: array
+    items:
+      type: string
   checksum:
     description: SHA-512 checksum used to verify the integrity of the package.
     type: string
