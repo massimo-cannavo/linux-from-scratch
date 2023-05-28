@@ -1,0 +1,9 @@
+name: gawk
+version: "5.2.1"
+source: https://ftp.gnu.org/gnu/gawk/gawk-5.2.1.tar.xz
+description: |
+  Gawk is the GNU implementation of the Awk programming language, first developed
+  for the UNIX operating system in the 1970s. The Awk programming language specializes
+  in dealing with data formatting in text files, particularly text data organized in columns.
+checksum:
+  f81da3e61987d1460326dc79fdbabacfd4660219bf66ec8ba18877500fd24e160761e401a5b868067f82bec46a6a808098f3f6a1f4c8b710e439cd3f99ffa56c
