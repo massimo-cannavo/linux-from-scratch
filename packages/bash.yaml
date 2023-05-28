@@ -1,0 +1,11 @@
+name: bash
+version: "5.2.15"
+source: https://ftp.gnu.org/gnu/bash/bash-5.2.15.tar.gz
+description: |
+  Bash is the GNU Project's shell—the Bourne Again Shell. This is an sh-compatible
+  shell that incorporates useful features from the Korn shell (ksh) and the C shell
+  (csh). It is intended to conform to the IEEE POSIX P1003.2/ISO 9945.2 Shell and Tools
+  standard. It offers functional improvements over sh for both programming and interactive
+  use. In addition, most sh scripts can be run by Bash without modification.
+checksum:
+  08a67f6da4af7a75ff2b2d5a9eb8fc46d8c6e9ae80ccaf73b51736d6609916861b1f3fced938ce3ea16d014edb324e1a3d8e03f4917f68dc56ffb665316f26c7
