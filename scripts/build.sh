@@ -51,4 +51,5 @@ pushdq .
   source ncurses.sh
   source bash.sh
   source coreutils.sh
+  source diffutils.sh
 popdq
