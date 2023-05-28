@@ -44,3 +44,8 @@ pushdq .
   source glibc.sh
   source libstdc++.sh
 popdq
+
+pushdq .
+  cd ../packages/tools
+  source m4.sh
+popdq
