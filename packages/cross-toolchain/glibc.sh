@@ -7,8 +7,8 @@ set -e
 
 YAML_FILE=../glibc.yaml
 PKG_FILE="$(
-  yq '.source' $YAML_FILE  \
-    | xargs basename       \
+  yq '.source' $YAML_FILE \
+    | xargs basename      \
     | sed 's/\.tar\.xz//g'
 )"
 PATCHES=$(yq '.patches[]' $YAML_FILE)

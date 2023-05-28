@@ -7,8 +7,8 @@ set -e
 
 YAML_FILE=../linux.yaml
 PKG_FILE="$(
-  yq '.source' $YAML_FILE  \
-    | xargs basename       \
+  yq '.source' $YAML_FILE \
+    | xargs basename      \
     | sed 's/\.tar\.xz//g'
 )"
 

@@ -11,8 +11,8 @@ export CROSS_TOOLCHAIN=$PWD
 
 YAML_FILE=../gcc.yaml
 PKG_FILE="$(
-  yq '.source' $YAML_FILE  \
-    | xargs basename       \
+  yq '.source' $YAML_FILE \
+    | xargs basename      \
     | sed 's/\.tar\.xz//g'
 )"
 GLIBC_VERSION=$(yq '.version' ../glibc.yaml)

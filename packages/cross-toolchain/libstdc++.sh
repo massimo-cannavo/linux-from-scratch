@@ -7,8 +7,8 @@ set -e
 
 YAML_FILE=../libstdc++.yaml
 PKG_FILE="$(
-  yq '.source' $YAML_FILE  \
-    | xargs basename       \
+  yq '.source' $YAML_FILE \
+    | xargs basename      \
     | sed 's/\.tar\.xz//g'
 )"
 GCC_VERSION=$(yq '.version' ../gcc.yaml)
@@ -19,12 +19,12 @@ pushdq .
   mkdir -pv build-libstdc++
   cd build-libstdc++
 
-  ../libstdc++-v3/configure --host="$LFS_TGT"                                                 \
-                            --build="$(../config.guess)"                                      \
-                            --prefix=/usr                                                     \
-                            --disable-multilib                                                \
-                            --disable-nls                                                     \
-                            --disable-libstdcxx-pch                                           \
+  ../libstdc++-v3/configure --host="$LFS_TGT"            \
+                            --build="$(../config.guess)" \
+                            --prefix=/usr                \
+                            --disable-multilib           \
+                            --disable-nls                \
+                            --disable-libstdcxx-pch      \
                             --with-gxx-include-dir="/tools/$LFS_TGT/include/c++/$GCC_VERSION"
 
   make -j"$(nproc)"
