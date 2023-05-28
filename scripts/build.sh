@@ -50,4 +50,5 @@ pushdq .
   source m4.sh
   source ncurses.sh
   source bash.sh
+  source coreutils.sh
 popdq
