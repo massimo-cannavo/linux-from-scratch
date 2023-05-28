@@ -28,13 +28,16 @@ def main() -> None:
 
             url = pkg.get('source')
             pkg_file = url.split('/')[-1]
-            sha512 = download_pkg(url, download_path=args.out)
+            sha512 = download_file(url, download_path=args.out)
             if not sha512:
                 sys.exit()
             if sha512 != pkg.get('checksum'):
                 handle_error(error=f'checksum verification failed for {pkg.get("name")}')
 
             extract_pkg(pkg_path=f'{args.out}/{pkg_file}', out_path=args.out)
+            patches = pkg.get('patches', [])
+            for patch in patches:
+                download_file(url=patch, download_path=args.out)
     except yaml.YAMLError as exc:
         if hasattr(exc, 'problem_mark'):
             error = f'{exc.problem}\n{exc.problem_mark}'
@@ -66,27 +69,27 @@ def parse_args() -> argparse.Namespace:
     return args
 
 
-def download_pkg(url: str, download_path: str) -> str:
+def download_file(url: str, download_path: str) -> str:
     '''
-    Downloads and verifies the integrity of a package.
+    Downloads and verifies the integrity of a file.
 
     Parameters
         url: str
-            URL used to download the package.
+            URL used to download the file.
         download_path: str
-            The path on the filesystem to download the package.
+            The path on the filesystem to download the file.
     '''
-    pkg_file = url.split('/')[-1]
-    pkg_path = f'{download_path}/{pkg_file}'
-    if Path(pkg_path).exists():
-        print(f'{pkg_file} exists, skipping download')
+    file = url.split('/')[-1]
+    file_path = f'{download_path}/{file}'
+    if Path(file_path).exists():
+        print(f'{file} exists, skipping download')
         return None
 
-    print(f'downloading {pkg_file} -> {download_path}')
+    print(f'downloading {file} -> {download_path}')
     with requests.get(url, timeout=5, stream=True) as response:
         response.raise_for_status()
         sha512 = hashlib.sha512()
-        with open(pkg_path, mode='wb') as file:
+        with open(file_path, mode='wb') as file:
             for chunk in response.iter_content(chunk_size=100 * 1024**2):
                 sha512.update(chunk)
                 file.write(chunk)
