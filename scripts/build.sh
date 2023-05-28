@@ -55,4 +55,5 @@ pushdq .
   source file.sh
   source findutils.sh
   source gawk.sh
+  source grep.sh
 popdq

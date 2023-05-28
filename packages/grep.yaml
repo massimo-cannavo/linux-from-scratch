@@ -1,0 +1,8 @@
+name: grep
+version: "3.8"
+source: https://ftp.gnu.org/gnu/grep/grep-3.8.tar.xz
+description: |
+  Grep searches one or more input files for lines containing a match to a
+  specified pattern. By default, Grep outputs the matching lines.
+checksum:
+  2014519a80c6dcd799837e1bd7d9d5ebe8729ec54b0dc76981dac4755a9a8a9f200470cdcc911e2825bed8162e61da39e3dd60289f7393b48bf67314077d0c79
