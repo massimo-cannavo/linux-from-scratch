@@ -62,4 +62,5 @@ pushdq .
   source sed.sh
   source tar.sh
   source xz.sh
+  source binutils.sh
 popdq
