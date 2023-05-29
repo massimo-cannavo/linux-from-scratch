@@ -89,3 +89,8 @@ pushdq .
   source texinfo.sh
   source util-linux.sh
 popdq
+
+rm -rf /usr/share/{info,man,doc}/*
+find /usr/{lib,libexec} -name \*.la -delete
+
+rm -rf /tools
