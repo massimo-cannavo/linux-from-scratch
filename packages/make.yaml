@@ -1,0 +1,8 @@
+name: make
+version: "4.4"
+source: https://ftp.gnu.org/gnu/make/make-4.4.tar.gz
+description: |
+  GNU Make is a tool which controls the generation of executables and other
+  non-source files of a program from the program's source files.
+checksum:
+  4be73f494295dcfa10034531b0d920cfdb5438bc20625f863f5c878549c140e1e67195162580c53060c3c11c67a2c739c09051f02cdd283e5aa9ebcd68975a1f

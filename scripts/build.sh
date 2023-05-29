@@ -57,4 +57,5 @@ pushdq .
   source gawk.sh
   source grep.sh
   source gzip.sh
+  source make.sh
 popdq
