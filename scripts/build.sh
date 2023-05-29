@@ -58,4 +58,5 @@ pushdq .
   source grep.sh
   source gzip.sh
   source make.sh
+  source patch.sh
 popdq

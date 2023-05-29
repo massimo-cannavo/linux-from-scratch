@@ -1,0 +1,9 @@
+name: patch
+version: "2.7.6"
+source: https://ftp.gnu.org/gnu/patch/patch-2.7.6.tar.xz
+description: |
+  Patch takes a patch file containing a difference listing produced by the diff
+  program and applies those differences to one or more original files, producing
+  patched versions.
+checksum:
+  fcca87bdb67a88685a8a25597f9e015f5e60197b9a269fa350ae35a7991ed8da553939b4bbc7f7d3cfd863c67142af403b04165633acbce4339056a905e87fbd
