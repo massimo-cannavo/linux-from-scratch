@@ -1,0 +1,11 @@
+name: sed
+version: "4.9"
+source: https://ftp.gnu.org/gnu/sed/sed-4.9.tar.xz
+description: |
+  Sed (stream editor) is a non-interactive command-line text editor. Sed is
+  commonly used to filter text, i.e., it takes text input, performs some operation
+  (or set of operations) on it, and outputs the modified text. Sed is typically
+  used for extracting part of a file using pattern matching or substituting
+  multiple occurrences of a string within a file.
+checksum:
+  36157a4b4a2430cf421b7bd07f1675d680d9f1616be96cf6ad6ee74a9ec0fe695f8d0b1e1f0b008bbb33cc7fcde5e1c456359bbbc63f8aebdd4fedc3982cf6dc
