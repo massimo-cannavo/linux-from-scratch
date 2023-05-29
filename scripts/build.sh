@@ -63,4 +63,5 @@ pushdq .
   source tar.sh
   source xz.sh
   source binutils.sh
+  source gcc.sh
 popdq
