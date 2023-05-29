@@ -1,0 +1,15 @@
+name: gettext
+version: "0.21.1"
+source: https://ftp.gnu.org/gnu/gettext/gettext-0.21.1.tar.xz
+description: |
+  GNU gettext is an important step for the GNU Translation Project, as it is an
+  asset on which we may build many other steps. This package offers to programmers,
+  translators, and even users, a well integrated set of tools and documentation.
+  Specifically, the GNU gettext utilities are a set of tools that provides a framework
+  to help other GNU packages produce multi-lingual messages. These tools include a set
+  of conventions about how programs should be written to support message catalogs, a
+  directory and file naming organization for the message catalogs themselves, a runtime
+  library supporting the retrieval of translated messages, and a few stand-alone programs
+  to massage in various ways the sets of translatable strings, or already translated strings.
+checksum:
+  61e93bc9876effd3ca1c4e64ff6ba5bd84b24951ec2cc6f40a0e3248410e60f887552f29ca1f70541fb5524f6a4e8191fed288713c3e280e18922dd5bff1a2c9

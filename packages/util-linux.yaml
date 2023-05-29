@@ -1,0 +1,8 @@
+name: util-linux
+version: "2.38.1"
+source: https://www.kernel.org/pub/linux/utils/util-linux/v2.38/util-linux-2.38.1.tar.xz
+description: |
+  Miscellaneous system utilities for Linux. A standard package distributed by the
+  Linux Kernel Organization for use as part of the Linux operating system.
+checksum:
+  07f11147f67dfc6c8bc766dfc83266054e6ede776feada0566b447d13276b6882ee85c6fe53e8d94a17c03332106fc0549deca3cf5f2e92dda554e9bc0551957

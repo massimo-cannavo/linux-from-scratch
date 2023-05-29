@@ -1,0 +1,11 @@
+name: texinfo
+version: "7.0.2"
+source: https://ftp.gnu.org/gnu/texinfo/texinfo-7.0.2.tar.xz
+description: |
+  Texinfo is the official documentation format of the GNU project. It is used by
+  many non-GNU projects as well. Texinfo uses a single source file to produce output
+  in a number of formats, both online and printed (HTML, PDF, DVI, Info, DocBook, LaTeX,
+  EPUB 3). This means that instead of writing different documents for online information
+  and another for a printed manual, you need write only one document.
+checksum:
+  26dd5bb1392f2197ecde296ba157d4533f4b11fadf1238481da4cf2b3796c665ce96049df8d2f9a6d4fa22b7e9013d9978d195e525288663f0a54482bbc22b2b
