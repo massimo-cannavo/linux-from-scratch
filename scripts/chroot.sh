@@ -1,9 +1,13 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC1091
 #
 # Commands executed in chroot environment.
 
 # Exit when any command fails.
 set -e
+
+export LFS_SOURCES=/sources
+source $LFS_SOURCES/scripts/utils.sh
 
 mkdir -pv /{home,mnt,opt,srv}
 mkdir -pv /etc/{opt,sysconfig}
@@ -75,3 +79,13 @@ touch /var/log/{btmp,lastlog,faillog,wtmp}
 chgrp -v utmp /var/log/lastlog
 chmod -v 664  /var/log/lastlog
 chmod -v 600  /var/log/btmp
+
+pushdq .
+  cd $LFS_SOURCES/packages/chroot
+  source gettext.sh
+  source bison.sh
+  source perl.sh
+  source python.sh
+  source texinfo.sh
+  source util-linux.sh
+popdq

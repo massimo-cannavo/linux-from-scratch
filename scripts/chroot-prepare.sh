@@ -33,8 +33,5 @@ mkdir -vp "$LFS_SOURCES/scripts"
 cp -v ./utils.sh "$LFS_SOURCES/scripts"
 cp -v ./chroot.sh "$LFS_SOURCES/scripts"
 
-mkdir -vp "$LFS_SOURCES/packages/chroot"
-cp -v ../packages/gettext.yaml "$LFS_SOURCES/packages"
 cp -v ../packages/chroot/* "$LFS_SOURCES/packages/chroot"
-
 source chroot-download.sh
