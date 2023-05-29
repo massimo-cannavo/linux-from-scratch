@@ -61,4 +61,5 @@ pushdq .
   source patch.sh
   source sed.sh
   source tar.sh
+  source xz.sh
 popdq
