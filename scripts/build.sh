@@ -65,3 +65,5 @@ pushdq .
   source binutils.sh
   source gcc.sh
 popdq
+
+sudo -E ./prepare-chroot.sh
