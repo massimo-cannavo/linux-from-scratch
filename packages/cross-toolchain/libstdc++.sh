@@ -29,8 +29,5 @@ pushdq .
 
   make -j"$(nproc)"
   make DESTDIR="$LFS" install
-
-  rm -v "$LFS/usr/lib/libstdc++.la"
-  rm -v "$LFS/usr/lib/libstdc++fs.la"
-  rm -v "$LFS/usr/lib/libsupc++.la"
+  rm -v "$LFS"/usr/lib/lib{stdc++,stdc++fs,supc++}.la
 popdq

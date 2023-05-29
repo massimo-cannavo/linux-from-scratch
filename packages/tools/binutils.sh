@@ -32,14 +32,5 @@ pushdq .
 
   make -j"$(nproc)"
   make DESTDIR="$LFS" install
-
-  rm -v "$LFS/usr/lib/libbfd.a"
-  rm -v "$LFS/usr/lib/libctf.a"
-  rm -v "$LFS/usr/lib/libctf-nobfd.a"
-  rm -v "$LFS/usr/lib/libopcodes.a"
-
-  rm -v "$LFS/usr/lib/libbfd.la"
-  rm -v "$LFS/usr/lib/libctf.la"
-  rm -v "$LFS/usr/lib/libctf-nobfd.la"
-  rm -v "$LFS/usr/lib/libopcodes.la"
+  rm -v "$LFS"/usr/lib/lib{bfd,ctf,ctf-nobfd,opcodes}.{a,la}
 popdq
