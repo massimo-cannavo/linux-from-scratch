@@ -15,7 +15,7 @@ PKG_FILE="$(
 python ../../scripts/download.py -f $YAML_FILE
 pushdq .
   cd "$LFS_SOURCES/$PKG_FILE"
-  sed -e '/ifdef SIGPIPE/,+2 d' \
+  sed -e '/ifdef SIGPIPE/,+2 d'                     \
       -e '/undef  FATAL_SIG/i FATAL_SIG (SIGPIPE);' \
       -i src/main.c
 
