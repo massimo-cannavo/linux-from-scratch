@@ -56,4 +56,5 @@ pushdq .
   source findutils.sh
   source gawk.sh
   source grep.sh
+  source gzip.sh
 popdq
