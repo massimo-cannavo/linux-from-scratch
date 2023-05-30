@@ -7,14 +7,7 @@ set -e
 
 source utils.sh
 
-mkdir -vp "$LFS_SOURCES/packages/chroot"
-cp -v ../packages/gettext.yaml "$LFS_SOURCES/packages"
-cp -v ../packages/bison.yaml "$LFS_SOURCES/packages"
-cp -v ../packages/perl.yaml "$LFS_SOURCES/packages"
-cp -v ../packages/python.yaml "$LFS_SOURCES/packages"
-cp -v ../packages/texinfo.yaml "$LFS_SOURCES/packages"
-cp -v ../packages/util-linux.yaml "$LFS_SOURCES/packages"
-
+cp -v ../packages/*.yaml "$LFS_SOURCES/packages"
 pushdq .
   cd ../packages
   python ../scripts/download.py -f gettext.yaml

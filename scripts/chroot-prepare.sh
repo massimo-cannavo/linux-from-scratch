@@ -29,9 +29,14 @@ if ! grep -q "$LFS/dev/shm" /proc/mounts; then
   fi
 fi
 
+rm -rf __pycache__
 mkdir -vp "$LFS_SOURCES/scripts"
-cp -v ./utils.sh "$LFS_SOURCES/scripts"
-cp -v ./chroot.sh "$LFS_SOURCES/scripts"
+cp -v ./*{.sh,.py} "$LFS_SOURCES/scripts"
 
+mkdir -vp "$LFS_SOURCES/packages/chroot"
 cp -v ../packages/chroot/* "$LFS_SOURCES/packages/chroot"
+
+mkdir -vp "$LFS_SOURCES/packages/software"
+cp -v ../packages/software/* "$LFS_SOURCES/packages/software"
+
 source chroot-download.sh
