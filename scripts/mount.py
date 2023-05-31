@@ -10,8 +10,6 @@ import yaml
 from common import (LUKS_PASSPHRASE, PARTITIONS_FILE, PARTITIONS_SCHEMA, CommandNotFoundError,
                     DeviceNotFoundError, get_dev_path, handle_error, parse_yaml)
 
-LFS_PATH = Path('/mnt/lfs')
-
 
 class PartitionNotFoundError(Exception):
     '''Exception raised when a partition was not found.'''
@@ -49,8 +47,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description='Mounts partitions from a YAML file.')
     parser.add_argument('-f', '--file',
                         default=PARTITIONS_FILE,
-                        help=f'reads from FILE instead of {os.path.basename(PARTITIONS_FILE)}',
-                        type=str)
+                        help=f'reads from FILE instead of {os.path.basename(PARTITIONS_FILE)}')
     args = parser.parse_args()
     return args
 
@@ -80,15 +77,17 @@ def mount_dev(config: dict, dev_path: str) -> None:
             if status.returncode == 4:
                 subprocess.run(['cryptsetup', '-v', 'open', partition_path, 'root'],
                                 check=True, input=os.environ.get(LUKS_PASSPHRASE).encode())
-            if not LFS_PATH.exists():
-                LFS_PATH.mkdir()
-                print(f'created directory {str(LFS_PATH)}')
 
-            subprocess.run(['mount', root_path, str(LFS_PATH)], check=True)
-            print(f'{root_path} mounted on {str(LFS_PATH)}')
+            lfs_path = Path('/mnt/lfs')
+            if not lfs_path.exists():
+                lfs_path.mkdir()
+                print(f'created directory {str(lfs_path)}')
+
+            subprocess.run(['mount', root_path, str(lfs_path)], check=True)
+            print(f'{root_path} mounted on {str(lfs_path)}')
 
             for partition_name in partitions:
-                mount_path = Path(f'{str(LFS_PATH)}/{partition_name}')
+                mount_path = Path(f'{str(lfs_path)}/{partition_name}')
                 if not mount_path.exists():
                     mount_path.mkdir()
                     print(f'created directory {str(mount_path)}')

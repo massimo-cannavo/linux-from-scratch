@@ -1,4 +1,4 @@
-'''TODO: add docstring'''
+'''Common module that can be imported in other modules.'''
 from dataclasses import dataclass
 from pathlib import Path
 import sys
@@ -10,6 +10,7 @@ import yaml
 
 LUKS_PASSPHRASE = 'LUKS_PASSPHRASE'
 PARENT_DIR = Path(__file__).parent.parent
+PACKAGE_SCHEMA = f'{PARENT_DIR}/package-schema.yaml'
 PARTITIONS_FILE = f'{PARENT_DIR}/partitions.yaml'
 PARTITIONS_SCHEMA = f'{PARENT_DIR}/partitions-schema.yaml'
 UTF8 = 'utf-8'

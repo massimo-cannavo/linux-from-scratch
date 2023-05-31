@@ -9,17 +9,14 @@ from jsonschema.exceptions import ValidationError
 import requests
 import yaml
 
-from common import PARENT_DIR, CommandNotFoundError, handle_error, parse_yaml
-
-SOURCE_PATH = '/mnt/lfs/sources'
-SCHEMA_FILE = f'{PARENT_DIR}/package-schema.yaml'
+from common import PACKAGE_SCHEMA, CommandNotFoundError, handle_error, parse_yaml
 
 
 def main() -> None:
     '''The main entrypoint of the script.'''
     args = parse_args()
     try:
-        pkg = parse_yaml(args.file, schema=SCHEMA_FILE)
+        pkg = parse_yaml(args.file, schema=PACKAGE_SCHEMA)
         url = pkg.get('source')
         pkg_file = url.split('/')[-1]
         sha512 = download_file(url, download_path=args.out)
@@ -51,14 +48,14 @@ def main() -> None:
 
 def parse_args() -> argparse.Namespace:
     '''Parse command line arguments.'''
+    sources_path = '/mnt/lfs/sources'
     parser = argparse.ArgumentParser(description='Downloads and verifies a package.')
     parser.add_argument('-f', '--file',
-                          help='package file used for downloading the package.',
-                          required=True,
-                          type=str)
+                        required=True,
+                        help='package file used for downloading the package.')
     parser.add_argument('-o', '--out',
-                        default=SOURCE_PATH,
-                        help=f'downloads packages in OUT insted of {SOURCE_PATH}')
+                        default=sources_path,
+                        help=f'downloads packages in OUT insted of {sources_path}')
     args = parser.parse_args()
     return args
 
