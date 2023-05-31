@@ -5,15 +5,13 @@ from pathlib import Path
 import subprocess
 import sys
 
-from jsonschema import validate
 from jsonschema.exceptions import ValidationError
 import requests
 import yaml
 
-from partition import UTF8, CommandNotFoundError, handle_error
+from common import PARENT_DIR, CommandNotFoundError, handle_error, parse_yaml
 
 SOURCE_PATH = '/mnt/lfs/sources'
-PARENT_DIR = Path(__file__).parent.parent
 SCHEMA_FILE = f'{PARENT_DIR}/package-schema.yaml'
 
 
@@ -21,23 +19,19 @@ def main() -> None:
     '''The main entrypoint of the script.'''
     args = parse_args()
     try:
-        with Path(args.file).open(mode='r', encoding=UTF8) as file:
-            pkg = yaml.safe_load(file)
-            with Path(SCHEMA_FILE).open(mode='r', encoding=UTF8) as schema:
-                validate(pkg, yaml.safe_load(schema))
+        pkg = parse_yaml(args.file, schema=SCHEMA_FILE)
+        url = pkg.get('source')
+        pkg_file = url.split('/')[-1]
+        sha512 = download_file(url, download_path=args.out)
+        if not sha512:
+            sys.exit()
+        if sha512 != pkg.get('checksum'):
+            handle_error(error=f'checksum verification failed for {pkg.get("name")}')
 
-            url = pkg.get('source')
-            pkg_file = url.split('/')[-1]
-            sha512 = download_file(url, download_path=args.out)
-            if not sha512:
-                sys.exit()
-            if sha512 != pkg.get('checksum'):
-                handle_error(error=f'checksum verification failed for {pkg.get("name")}')
-
-            extract_pkg(pkg_path=f'{args.out}/{pkg_file}', out_path=args.out)
-            patches = pkg.get('patches', [])
-            for patch in patches:
-                download_file(url=patch, download_path=args.out)
+        extract_pkg(pkg_path=f'{args.out}/{pkg_file}', out_path=args.out)
+        patches = pkg.get('patches', [])
+        for patch in patches:
+            download_file(url=patch, download_path=args.out)
     except yaml.YAMLError as exc:
         if hasattr(exc, 'problem_mark'):
             error = f'{exc.problem}\n{exc.problem_mark}'

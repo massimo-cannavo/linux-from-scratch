@@ -1,24 +1,19 @@
 '''Partitions a device using a YAML file.'''
 import argparse
-from dataclasses import dataclass
 import math
 import os
 from pathlib import Path
 import subprocess
 import sys
 import time
-from typing import Any
 
-from jsonschema import validate
 from jsonschema.exceptions import ValidationError
-import pyudev
 import yaml
 
-PARENT_DIR = Path(__file__).parent.parent
-CONFIG_FILE = f'{PARENT_DIR}/partitions.yaml'
-SCHEMA_FILE = f'{PARENT_DIR}/partitions-schema.yaml'
-LUKS_PASSPHRASE = 'LUKS_PASSPHRASE'
-UTF8 = 'utf-8'
+from common import (LUKS_PASSPHRASE, PARTITIONS_FILE, PARTITIONS_SCHEMA, UTF8, Colors,
+                    CommandNotFoundError, DeviceNotFoundError, get_dev_path, handle_error,
+                    parse_yaml)
+
 UNIT_SYSTEM = {
     **dict.fromkeys(['B', 'KiB', 'MiB', 'GiB', 'TiB'], 1024),
     **dict.fromkeys(['KB', 'MB', 'GB', 'TB'], 1000)
@@ -36,30 +31,8 @@ MKFS_CMD = {
 }
 
 
-@dataclass
-class Colors:
-    '''Colors used to diplay to the console.'''
-    RED = '\033[1;31m'
-    GREEN = '\033[1;32m'
-    YELLOW = '\033[1;33m'
-    BLUE  = '\033[1;34m'
-    RESET = '\033[m'
-
-
-class CommandNotFoundError(Exception):
-    '''Exception raised when a command was not found.'''
-    def __init__(self, message: str) -> None:
-        super().__init__(message)
-
-
 class InvalidUnitError(Exception):
     '''Exception raised when an invalid unit was specified.'''
-    def __init__(self, message: str) -> None:
-        super().__init__(message)
-
-
-class DeviceNotFoundError(Exception):
-    '''Exception raised when a device was not found.'''
     def __init__(self, message: str) -> None:
         super().__init__(message)
 
@@ -71,7 +44,7 @@ def main() -> None:
         handle_error(error='run as root')
 
     try:
-        config = parse_config(args.file)
+        config = parse_yaml(args.file, schema=PARTITIONS_SCHEMA)
         dev_path = get_dev_path(config.get('device'))
         display_partitions(dev_path)
         if args.what_if:
@@ -101,60 +74,14 @@ def parse_args() -> argparse.Namespace:
     '''Parse command line arguments.'''
     parser = argparse.ArgumentParser(description='Partitions a device from a YAML file.')
     parser.add_argument('-f', '--file',
-                        default=CONFIG_FILE,
-                        help=f'reads from FILE instead of {os.path.basename(CONFIG_FILE)}',
+                        default=PARTITIONS_FILE,
+                        help=f'reads from FILE instead of {os.path.basename(PARTITIONS_FILE)}',
                         type=str)
     parser.add_argument('--what-if',
                         action='store_true',
                         help='displays a preview of the operations to perform')
     args = parser.parse_args()
     return args
-
-
-def handle_error(error: Any = None) -> None:
-    '''
-    Error handling that gracefuly terminates the program.
-
-    Parameters
-        error: Any
-            The error message to print to the console.
-    '''
-    if error:
-        print(f'{Colors.RED}[ ERROR ]{Colors.RESET} {error}', file=sys.stderr)
-
-    sys.exit(1)
-
-
-def parse_config(filename: str) -> dict:
-    '''
-    Parse YAML file and extract the config needed to partition the device.
-
-    Parameters
-        filename: str
-            Name of the YAML config file to parse.
-    '''
-    with Path(filename).open(mode='r', encoding=UTF8) as file:
-        config = yaml.safe_load(file)
-        with Path(SCHEMA_FILE).open(mode='r', encoding=UTF8) as schema:
-            validate(config, yaml.safe_load(schema))
-
-    return config
-
-
-def get_dev_path(serial_id: str) -> str:
-    '''
-    Looks up the device path given a serial ID.
-
-    Parameters
-        serial_id: str
-            Serial ID of the device.
-    '''
-    context = pyudev.Context()
-    for device in context.list_devices(subsystem='block', DEVTYPE='disk'):
-        if device.get('ID_SERIAL') == serial_id:
-            return f'/dev/{device.sys_name}'
-
-    raise DeviceNotFoundError(f'device not found: {serial_id}')
 
 
 def display_partitions(dev_path: str) -> None:

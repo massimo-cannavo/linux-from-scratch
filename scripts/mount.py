@@ -3,10 +3,12 @@ import argparse
 import os
 from pathlib import Path
 import subprocess
+
+from jsonschema import ValidationError
 import yaml
 
-from partition import (CONFIG_FILE, LUKS_PASSPHRASE, CommandNotFoundError, DeviceNotFoundError,
-                       get_dev_path, handle_error, parse_config, ValidationError)
+from common import (LUKS_PASSPHRASE, PARTITIONS_FILE, PARTITIONS_SCHEMA, CommandNotFoundError,
+                    DeviceNotFoundError, get_dev_path, handle_error, parse_yaml)
 
 LFS_PATH = Path('/mnt/lfs')
 
@@ -24,7 +26,7 @@ def main() -> None:
         handle_error(error='run as root')
 
     try:
-        config = parse_config(args.file)
+        config = parse_yaml(args.file, schema=PARTITIONS_SCHEMA)
         dev_path = get_dev_path(config.get('device'))
         mount_dev(config, dev_path)
     except yaml.YAMLError as exc:
@@ -46,8 +48,8 @@ def parse_args() -> argparse.Namespace:
     '''Parse command line arguments.'''
     parser = argparse.ArgumentParser(description='Mounts partitions from a YAML file.')
     parser.add_argument('-f', '--file',
-                        default=CONFIG_FILE,
-                        help=f'reads from FILE instead of {os.path.basename(CONFIG_FILE)}',
+                        default=PARTITIONS_FILE,
+                        help=f'reads from FILE instead of {os.path.basename(PARTITIONS_FILE)}',
                         type=str)
     args = parser.parse_args()
     return args
