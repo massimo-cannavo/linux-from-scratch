@@ -6,11 +6,7 @@
 set -e
 
 YAML_FILE=../binutils.yaml
-PKG_FILE="$(
-  yq '.source' $YAML_FILE  \
-    | xargs basename       \
-    | sed 's/\.tar\.xz//g'
-)"
+PKG_FILE=$(python ../../scripts/pyaml.py -f $YAML_FILE -q package)
 
 python ../../scripts/download.py -f $YAML_FILE
 pushdq .
