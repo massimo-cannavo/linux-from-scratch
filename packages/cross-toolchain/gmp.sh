@@ -6,11 +6,7 @@
 set -e
 
 YAML_FILE=$CROSS_TOOLCHAIN/../gmp.yaml
-PKG_FILE="$(
-  yq '.source' "$YAML_FILE" \
-    | xargs basename        \
-    | sed 's/\.tar\.xz//g'
-)"
+PKG_FILE=$(python ../../scripts/pyaml.py -f "$YAML_FILE" -q package)
 
 python "$SCRIPTS/download.py" -f "$YAML_FILE"
 if [[ -f $LFS_SOURCES/$PKG_FILE ]]; then

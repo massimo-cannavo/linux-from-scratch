@@ -6,12 +6,12 @@
 set -e
 
 YAML_FILE=../libstdc++.yaml
-PKG_FILE="$(
-  yq '.source' $YAML_FILE \
-    | xargs basename      \
-    | sed 's/\.tar\.xz//g'
-)"
-GCC_VERSION=$(yq '.version' ../gcc.yaml)
+PKG_FILE=$(python ../../scripts/pyaml.py -f $YAML_FILE -q package)
+GCC_VERSION=$(
+  python ../../scripts/pyaml.py \
+    -f ../gcc.yaml              \
+    -q .version
+)
 
 python ../../scripts/download.py -f $YAML_FILE
 pushdq .

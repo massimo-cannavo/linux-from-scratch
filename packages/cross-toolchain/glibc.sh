@@ -6,12 +6,12 @@
 set -e
 
 YAML_FILE=../glibc.yaml
-PKG_FILE="$(
-  yq '.source' $YAML_FILE \
-    | xargs basename      \
-    | sed 's/\.tar\.xz//g'
-)"
-PATCHES=$(yq '.patches[]' $YAML_FILE)
+PKG_FILE=$(python ../../scripts/pyaml.py -f $YAML_FILE -q package)
+PATCHES=$(
+  python ../../scripts/pyaml.py \
+    -f $YAML_FILE               \
+    -q .patches
+)
 
 python ../../scripts/download.py -f $YAML_FILE
 pushdq .

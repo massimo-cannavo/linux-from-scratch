@@ -10,12 +10,12 @@ export SCRIPTS
 export CROSS_TOOLCHAIN=$PWD
 
 YAML_FILE=../gcc.yaml
-PKG_FILE="$(
-  yq '.source' $YAML_FILE \
-    | xargs basename      \
-    | sed 's/\.tar\.xz//g'
-)"
-GLIBC_VERSION=$(yq '.version' ../glibc.yaml)
+PKG_FILE=$(python "$SCRIPTS/pyaml.py" -f $YAML_FILE -q package)
+GLIBC_VERSION=$(
+  python "$SCRIPTS/pyaml.py" \
+    -f ../glibc.yaml         \
+    -q .version
+)
 
 python "$SCRIPTS/download.py" -f $YAML_FILE
 pushdq .
