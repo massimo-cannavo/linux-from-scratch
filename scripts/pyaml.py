@@ -39,8 +39,9 @@ def extract_yaml(data: dict, query: str) -> None:
             The query used to specify the attributes to extract.
     '''
     if query == 'package':
-        print(data.get('source').split('/')[-1])
-        return
+        pkg_file = data.get('source').split('/')[-1]
+        pkg_file = pkg_file.replace('.tar.xz', '').replace('.tar.gz', '')
+        print(pkg_file)
 
     selector = query.split('.')[1:]
     selector_num = len(selector)
