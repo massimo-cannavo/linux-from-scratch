@@ -28,7 +28,7 @@ def parse_args() -> argparse.Namespace:
     return args
 
 
-def extract_yaml(data: dict, query: str):
+def extract_yaml(data: dict, query: str) -> None:
     '''
     Extracts the specified attribute from YAML data given a query.
 
@@ -38,6 +38,10 @@ def extract_yaml(data: dict, query: str):
         query: str
             The query used to specify the attributes to extract.
     '''
+    if query == 'package':
+        print(data.get('source').split('/')[-1])
+        return
+
     selector = query.split('.')[1:]
     selector_num = len(selector)
     for element in selector:
