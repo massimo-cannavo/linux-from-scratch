@@ -10,7 +10,7 @@ import (
 const sourcesPath = "/mnt/lfs/sources"
 
 var (
-	file         string
+	filename     string
 	downloadPath string
 
 	rootCmd = &cobra.Command{
@@ -32,7 +32,7 @@ func Execute() {
 // init configures and initializes the flags that are
 // supported by the application.
 func init() {
-	rootCmd.Flags().StringVarP(&file, "file", "f", "",
+	rootCmd.Flags().StringVarP(&filename, "file", "f", "",
 		"package file used for downloading the package. (required)")
 	rootCmd.Flags().StringVarP(&downloadPath, "destination", "d", sourcesPath,
 		"destination path to download the package.")
