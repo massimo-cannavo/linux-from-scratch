@@ -1,4 +1,4 @@
-module github.com/massimo-cannavo/linux-from-scratch/tools/download-pkg
+module github.com/massimo-cannavo/linux-from-scratch/utils/download-pkg
 
 go 1.19
 
