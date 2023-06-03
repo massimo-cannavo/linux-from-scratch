@@ -33,14 +33,16 @@ func HandleError(err error) {
 
 // ParseYaml extracts the specified attributes from yamlSchema
 // in the given YAML file filename.
-func ParseYaml(filename string, yamlSchema interface{}) {
+func ParseYaml(filename string, yamlSchema interface{}) error {
 	data, err := os.ReadFile(filename)
 	if err != nil {
-		HandleError(err)
+		return err
 	}
 
 	err = yaml.Unmarshal(data, yamlSchema)
 	if err != nil {
-		HandleError(err)
+		return err
 	}
+
+	return nil
 }

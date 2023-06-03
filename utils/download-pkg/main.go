@@ -14,5 +14,8 @@ type YamlSchema struct {
 func main() {
 	cmd.Execute()
 	yamlSchema := YamlSchema{}
-	common.ParseYaml(cmd.Filename, &yamlSchema)
+	err := common.ParseYaml(cmd.Filename, &yamlSchema)
+	if err != nil {
+		common.HandleError(err)
+	}
 }
