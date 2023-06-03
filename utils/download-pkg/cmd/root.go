@@ -10,8 +10,8 @@ import (
 const sourcesPath = "/mnt/lfs/sources"
 
 var (
-	filename     string
-	downloadPath string
+	Filename     string
+	DownloadPath string
 
 	rootCmd = &cobra.Command{
 		Use:   "download-pkg",
@@ -32,9 +32,9 @@ func Execute() {
 // init configures and initializes the flags that are
 // supported by the application.
 func init() {
-	rootCmd.Flags().StringVarP(&filename, "file", "f", "",
+	rootCmd.Flags().StringVarP(&Filename, "file", "f", "",
 		"package file used for downloading the package. (required)")
-	rootCmd.Flags().StringVarP(&downloadPath, "destination", "d", sourcesPath,
+	rootCmd.Flags().StringVarP(&DownloadPath, "destination", "d", sourcesPath,
 		"destination path to download the package.")
 
 	rootCmd.MarkFlagRequired("file")
