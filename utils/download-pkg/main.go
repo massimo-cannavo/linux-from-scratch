@@ -73,8 +73,7 @@ func downloadFile(url string, downloadPath string) (string, error) {
 
 	paths := strings.Split(url, "/")
 	filepath := fmt.Sprintf("%s/%s", downloadPath, paths[len(paths)-1])
-	_, err = os.Stat(filepath)
-	if os.IsExist(err) {
+	if _, err = os.Stat(filepath); os.IsExist(err) {
 		fmt.Printf("%s exists, skipping download", filepath)
 		return "", nil
 	}
@@ -88,8 +87,7 @@ func downloadFile(url string, downloadPath string) (string, error) {
 	defer out.Close()
 
 	hash := sha512.New()
-	_, err = io.Copy(hash, resp.Body)
-	if err != nil {
+	if _, err = io.Copy(hash, resp.Body); err != nil {
 		return "", err
 	}
 
