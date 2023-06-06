@@ -39,8 +39,7 @@ func ParseYaml(filename string, yamlSchema interface{}) error {
 		return err
 	}
 
-	err = yaml.Unmarshal(data, yamlSchema)
-	if err != nil {
+	if err = yaml.Unmarshal(data, yamlSchema); err != nil {
 		return err
 	}
 
