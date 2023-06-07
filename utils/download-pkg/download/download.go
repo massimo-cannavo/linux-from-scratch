@@ -23,6 +23,13 @@ type YamlSchema struct {
 // and downloads the contents of the file to downloadPath. A
 // SHA512 checksum of the file is calculated and returned.
 func DownloadFile(url string, downloadPath string) (string, error) {
+	paths := strings.Split(url, "/")
+	filepath := fmt.Sprintf("%s/%s", downloadPath, paths[len(paths)-1])
+	if _, err := os.Stat(filepath); err == nil {
+		fmt.Printf("%s exists, skipping download\n", filepath)
+		return "", nil
+	}
+
 	resp, err := http.Get(url)
 	if err != nil {
 		return "", err
@@ -30,14 +37,7 @@ func DownloadFile(url string, downloadPath string) (string, error) {
 
 	defer resp.Body.Close()
 
-	paths := strings.Split(url, "/")
-	filepath := fmt.Sprintf("%s/%s", downloadPath, paths[len(paths)-1])
-	if _, err = os.Stat(filepath); os.IsExist(err) {
-		fmt.Printf("%s exists, skipping download", filepath)
-		return "", nil
-	}
-
-	fmt.Printf("downloading %s -> %s", filepath, downloadPath)
+	fmt.Printf("downloading %s -> %s\n", filepath, downloadPath)
 	out, err := os.Create(filepath)
 	if err != nil {
 		return "", err
@@ -45,13 +45,11 @@ func DownloadFile(url string, downloadPath string) (string, error) {
 
 	defer out.Close()
 
+	data := io.TeeReader(resp.Body, out)
 	hash := sha512.New()
-	if _, err = io.Copy(hash, resp.Body); err != nil {
-		return "", err
-	}
+	_, err = io.Copy(hash, data)
 
-	_, err = io.Copy(out, resp.Body)
-	return string(hash.Sum(nil)), err
+	return fmt.Sprintf("%x", hash.Sum(nil)), err
 }
 
 // ValidateSchema validates that the required attributes

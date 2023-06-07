@@ -60,8 +60,10 @@ func download() {
 	if err != nil {
 		common.HandleError(err)
 	}
-	if checksum != *yamlSchema.Checksum {
-		common.HandleError(fmt.Errorf("checksum verification failed for %s", *yamlSchema.Checksum))
+	if checksum == "" {
+		os.Exit(0)
+	} else if checksum != *yamlSchema.Checksum {
+		common.HandleError(fmt.Errorf("checksum verification failed for %s", *yamlSchema.Name))
 	}
 
 	for _, patch := range yamlSchema.Patches {
