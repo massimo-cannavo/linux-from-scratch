@@ -4,6 +4,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/massimo-cannavo/linux-from-scratch/utils/common"
 	"github.com/spf13/cobra"
@@ -66,6 +67,11 @@ func download() {
 		common.HandleError(fmt.Errorf("checksum verification failed for %s", *yamlSchema.Name))
 	}
 
+	paths := strings.Split(*yamlSchema.Source, "/")
+	filepath := paths[len(paths)-1]
+	if err := downloadpkg.Extract(filepath, downloadPath); err != nil {
+		common.HandleError(err)
+	}
 	for _, patch := range yamlSchema.Patches {
 		if _, err := downloadpkg.DownloadFile(patch, downloadPath); err != nil {
 			common.HandleError(err)

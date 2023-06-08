@@ -8,6 +8,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"os/exec"
 	"strings"
 )
 
@@ -50,6 +51,20 @@ func DownloadFile(url string, downloadPath string) (string, error) {
 	_, err = io.Copy(hash, data)
 
 	return fmt.Sprintf("%x", hash.Sum(nil)), err
+}
+
+// Extract attempts to extract a tar archive given by
+// filepath to destPath.
+func Extract(filepath string, destPath string) error {
+	fmt.Printf("extracting %s\n", filepath)
+	cmd := exec.Command("tar", "-xvf", filepath, "-C", destPath)
+	stdout, err := cmd.Output()
+	if err != nil {
+		return err
+	}
+
+	fmt.Print(string(stdout[:]))
+	return nil
 }
 
 // ValidateSchema validates that the required attributes
