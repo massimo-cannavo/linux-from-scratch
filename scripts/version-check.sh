@@ -51,6 +51,7 @@ make --version | head -n1
 patch --version | head -n1
 echo Perl "$(perl -V:version)"
 python3 --version
+go version
 sed --version | head -n1
 tar --version | head -n1
 makeinfo --version | head -n1
