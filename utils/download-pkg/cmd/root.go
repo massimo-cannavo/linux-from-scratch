@@ -39,9 +39,9 @@ func Execute() {
 // supported by the application.
 func init() {
 	rootCmd.Flags().StringVarP(&filename, "file", "f", "",
-		"package file used for downloading the package. (required)")
+		"package file used for downloading the package (required)")
 	rootCmd.Flags().StringVarP(&downloadPath, "destination", "d", sourcesPath,
-		"destination path to download the package.")
+		"destination path to download the package")
 
 	rootCmd.MarkFlagRequired("file")
 }
