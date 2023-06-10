@@ -47,4 +47,14 @@ func mount() {
 	if err := mountdev.ValidateSchema(yamlSchema); err != nil {
 		common.HandleError(fmt.Errorf("%s in %s", err, filename))
 	}
+
+	devPath, err := common.GetDevPath(*yamlSchema.Device)
+	if err != nil {
+		common.HandleError(err)
+	} else if devPath == "" {
+		common.HandleError(fmt.Errorf("device not found: %s", *yamlSchema.Device))
+	}
+	if err := mountdev.Mount(yamlSchema, devPath); err != nil {
+		common.HandleError(err)
+	}
 }
