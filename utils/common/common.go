@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/fs"
 	"os"
+	"os/user"
 	"path/filepath"
 	"strings"
 
@@ -34,6 +35,16 @@ const PartitionsFile = "../partitions-schema.yaml"
 func HandleError(err error) {
 	os.Stderr.WriteString(fmt.Sprintf("%s[ ERROR ]%s %s\n", color.red, color.reset, err))
 	os.Exit(1)
+}
+
+// IsUserRoot determines if the current user is root.
+func IsUserRoot() bool {
+	currentUser, err := user.Current()
+	if err != nil {
+		HandleError(err)
+	}
+
+	return currentUser.Username == "root"
 }
 
 // ParseYaml extracts the specified attributes from yamlSchema

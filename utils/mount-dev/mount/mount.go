@@ -62,14 +62,47 @@ func ValidateSchema(yamlSchema YamlSchema) error {
 	return nil
 }
 
+// Mount will mount all partitions from yamlSchema to the
+// specified devPath.
 func Mount(yamlSchema YamlSchema, devPath string) error {
 	root := yamlSchema.Partitions["root"]
+	rootPath := fmt.Sprintf("%s%d", devPath, *root.Number)
 	if *root.Encrypted {
-		decryptPartition(fmt.Sprintf("%s%d", devPath, *root.Number))
+		decryptPartition(rootPath)
+		rootPath = "/dev/mapper/root"
 	}
-	// for _, partition := range yamlSchema.Partitions {
 
-	// }
+	lfsPath := "/mnt/lfs"
+	if _, err := os.Stat(lfsPath); os.IsNotExist(err) {
+		os.MkdirAll(lfsPath, 0750)
+		fmt.Printf("created directory %s\n", lfsPath)
+	}
+
+	cmd := exec.Command("mount", rootPath, lfsPath)
+	if err := cmd.Run(); err != nil {
+		return err
+	}
+
+	fmt.Printf("%s mounted on %s\n", rootPath, lfsPath)
+	for partitionName, partition := range yamlSchema.Partitions {
+		if partitionName == "root" {
+			continue
+		}
+
+		partitionPath := fmt.Sprintf("%s%d", devPath, *partition.Number)
+		mountPath := fmt.Sprintf("%s/%s", lfsPath, partitionName)
+		if _, err := os.Stat(mountPath); os.IsNotExist(err) {
+			os.MkdirAll(mountPath, 0750)
+			fmt.Printf("created directory %s\n", mountPath)
+		}
+
+		cmd := exec.Command("mount", partitionPath, mountPath)
+		if err := cmd.Run(); err != nil {
+			return err
+		}
+
+		fmt.Printf("%s mounted on %s\n", partitionPath, mountPath)
+	}
 
 	return nil
 }

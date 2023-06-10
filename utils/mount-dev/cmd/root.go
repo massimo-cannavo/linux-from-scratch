@@ -38,8 +38,13 @@ func init() {
 		"YAML file that contains partitions to mount")
 }
 
-// TODO: add comments.
+// mount attempts to mount all partitions parsed from a
+// given YAML file.
 func mount() {
+	if !common.IsUserRoot() {
+		common.HandleError(fmt.Errorf("run as root"))
+	}
+
 	yamlSchema := mountdev.YamlSchema{}
 	if err := common.ParseYaml(filename, &yamlSchema); err != nil {
 		common.HandleError(err)
