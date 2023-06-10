@@ -46,7 +46,7 @@ func init() {
 	rootCmd.MarkFlagRequired("file")
 }
 
-// download will call all the functions defined in downloadpkg.
+// download attempts to download and extract a package.
 func download() {
 	yamlSchema := downloadpkg.YamlSchema{}
 
