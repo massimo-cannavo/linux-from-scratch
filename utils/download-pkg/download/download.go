@@ -20,6 +20,22 @@ type YamlSchema struct {
 	Patches []string
 }
 
+// ValidateSchema validates that the required attributes
+// exist in yamlSchema.
+func ValidateSchema(yamlSchema YamlSchema) error {
+	if yamlSchema.Name == nil {
+		return errors.New("missing property: name")
+	}
+	if yamlSchema.Source == nil {
+		return errors.New("missing property: source")
+	}
+	if yamlSchema.Checksum == nil {
+		return errors.New("missing property: checksum")
+	}
+
+	return nil
+}
+
 // DownloadFile attempts to extract a filename from a given url
 // and downloads the contents of the file to downloadPath. A
 // SHA512 checksum of the file is calculated and returned.
@@ -64,21 +80,5 @@ func Extract(filepath string, destPath string) error {
 	}
 
 	fmt.Print(string(stdout[:]))
-	return nil
-}
-
-// ValidateSchema validates that the required attributes
-// exist in yamlSchema.
-func ValidateSchema(yamlSchema YamlSchema) error {
-	if yamlSchema.Name == nil {
-		return errors.New("missing property: name")
-	}
-	if yamlSchema.Source == nil {
-		return errors.New("missing property: source")
-	}
-	if yamlSchema.Checksum == nil {
-		return errors.New("missing property: checksum")
-	}
-
 	return nil
 }
