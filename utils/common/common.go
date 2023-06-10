@@ -51,13 +51,21 @@ func ParseYaml(filename string, yamlSchema interface{}) error {
 	return nil
 }
 
+// GetDevPath looks for a device with the specified serialNo
+// and returns the path of the device if found.
 func GetDevPath(serialNo string) (string, error) {
+	devPath := ""
 	err := filepath.Walk("/dev/disk/by-id/", func(path string, info fs.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
-		if strings.Contains(info.Name(), serialNo) {
-			fmt.Print(info.Name())
+		if strings.Contains(info.Name(), "part") {
+			return nil
+		} else if strings.Contains(info.Name(), serialNo) {
+			devPath, err = filepath.EvalSymlinks(path)
+			if err != nil {
+				return nil
+			}
 		}
 
 		return nil
@@ -67,5 +75,5 @@ func GetDevPath(serialNo string) (string, error) {
 		return "", err
 	}
 
-	return "", nil
+	return devPath, nil
 }
