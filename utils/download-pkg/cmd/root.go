@@ -49,7 +49,6 @@ func init() {
 // download attempts to download and extract a package.
 func download() {
 	yamlSchema := downloadpkg.YamlSchema{}
-
 	if err := common.ParseYaml(filename, &yamlSchema); err != nil {
 		common.HandleError(err)
 	}
