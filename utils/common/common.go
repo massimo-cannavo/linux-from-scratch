@@ -44,11 +44,7 @@ func ParseYaml(filename string, yamlSchema interface{}) error {
 		return err
 	}
 
-	if err = yaml.Unmarshal(data, yamlSchema); err != nil {
-		return err
-	}
-
-	return nil
+	return yaml.Unmarshal(data, yamlSchema)
 }
 
 // GetDevPath looks for a device with the specified serialNo
@@ -60,20 +56,14 @@ func GetDevPath(serialNo string) (string, error) {
 			return err
 		}
 		if strings.Contains(info.Name(), "part") {
-			return nil
+			return err
 		} else if strings.Contains(info.Name(), serialNo) {
 			devPath, err = filepath.EvalSymlinks(path)
-			if err != nil {
-				return nil
-			}
+			return err
 		}
 
-		return nil
+		return err
 	})
 
-	if err != nil {
-		return "", err
-	}
-
-	return devPath, nil
+	return devPath, err
 }

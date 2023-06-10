@@ -44,7 +44,7 @@ func DownloadFile(url string, downloadPath string) (string, error) {
 	filepath := fmt.Sprintf("%s/%s", downloadPath, paths[len(paths)-1])
 	if _, err := os.Stat(filepath); err == nil {
 		fmt.Printf("%s exists, skipping download\n", filepath)
-		return "", nil
+		return "", err
 	}
 
 	resp, err := http.Get(url)
@@ -80,5 +80,5 @@ func Extract(filepath string, destPath string) error {
 	}
 
 	fmt.Print(string(stdout[:]))
-	return nil
+	return err
 }
