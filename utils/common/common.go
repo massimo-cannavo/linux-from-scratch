@@ -3,7 +3,10 @@ package common
 
 import (
 	"fmt"
+	"io/fs"
 	"os"
+	"path/filepath"
+	"strings"
 
 	"gopkg.in/yaml.v3"
 )
@@ -23,6 +26,8 @@ var color = &Color{
 	yellow: "\033[1;33m",
 	blue:   "\033[1;34m",
 }
+
+const PartitionsFile = "../partitions-schema.yaml"
 
 // HandleError prints a formatted error message to Stderr
 // and exits gracefully.
@@ -44,4 +49,23 @@ func ParseYaml(filename string, yamlSchema interface{}) error {
 	}
 
 	return nil
+}
+
+func GetDevPath(serialNo string) (string, error) {
+	err := filepath.Walk("/dev/disk/by-id/", func(path string, info fs.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if strings.Contains(info.Name(), serialNo) {
+			fmt.Print(info.Name())
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		return "", err
+	}
+
+	return "", nil
 }
