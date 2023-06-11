@@ -6,9 +6,8 @@ import (
 	"os"
 
 	"github.com/massimo-cannavo/linux-from-scratch/utils/common"
+	"github.com/massimo-cannavo/linux-from-scratch/utils/mount/mount-dev"
 	"github.com/spf13/cobra"
-
-	mountdev "github.com/massimo-cannavo/linux-from-scratch/utils/mount-dev/mount"
 )
 
 var (
@@ -16,9 +15,9 @@ var (
 
 	rootCmd = &cobra.Command{
 		Use:   "mount",
-		Short: "Mounts partitions from a YAML file.",
+		Short: "Mounts partitions from a YAML file",
 		Run: func(cmd *cobra.Command, args []string) {
-			mount()
+			mountDev()
 		},
 	}
 )
@@ -38,18 +37,18 @@ func init() {
 		"YAML file that contains partitions to mount")
 }
 
-// mount attempts to mount all partitions parsed from a
+// mountDev attempts to mount all partitions parsed from a
 // given YAML file.
-func mount() {
+func mountDev() {
 	if !common.IsUserRoot() {
 		common.HandleError(fmt.Errorf("run as root"))
 	}
 
-	yamlSchema := mountdev.YamlSchema{}
+	yamlSchema := mount.YamlSchema{}
 	if err := common.ParseYaml(filename, &yamlSchema); err != nil {
 		common.HandleError(err)
 	}
-	if err := mountdev.ValidateSchema(yamlSchema); err != nil {
+	if err := mount.ValidateSchema(yamlSchema); err != nil {
 		common.HandleError(fmt.Errorf("%s in %s", err, filename))
 	}
 
@@ -59,7 +58,7 @@ func mount() {
 	} else if devPath == "" {
 		common.HandleError(fmt.Errorf("device not found: %s", *yamlSchema.Device))
 	}
-	if err := mountdev.Mount(yamlSchema, devPath); err != nil {
+	if err := mount.MountDev(yamlSchema, devPath); err != nil {
 		common.HandleError(err)
 	}
 }

@@ -1,5 +1,5 @@
 // Functions used to download a package from parsing a YAML file.
-package downloadpkg
+package download
 
 import (
 	"crypto/sha512"

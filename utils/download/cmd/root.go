@@ -7,9 +7,8 @@ import (
 	"strings"
 
 	"github.com/massimo-cannavo/linux-from-scratch/utils/common"
+	"github.com/massimo-cannavo/linux-from-scratch/utils/download/download-pkg"
 	"github.com/spf13/cobra"
-
-	downloadpkg "github.com/massimo-cannavo/linux-from-scratch/utils/download-pkg/download"
 )
 
 const sourcesPath = "/mnt/lfs/sources"
@@ -19,10 +18,10 @@ var (
 	downloadPath string
 
 	rootCmd = &cobra.Command{
-		Use:   "download-pkg",
+		Use:   "download",
 		Short: "Downloads a specific version of a package using a YAML file",
 		Run: func(cmd *cobra.Command, args []string) {
-			download()
+			downloadPkg()
 		},
 	}
 )
@@ -46,17 +45,17 @@ func init() {
 	rootCmd.MarkFlagRequired("file")
 }
 
-// download attempts to download and extract a package.
-func download() {
-	yamlSchema := downloadpkg.YamlSchema{}
+// downloadPkg attempts to download and extract a package.
+func downloadPkg() {
+	yamlSchema := download.YamlSchema{}
 	if err := common.ParseYaml(filename, &yamlSchema); err != nil {
 		common.HandleError(err)
 	}
-	if err := downloadpkg.ValidateSchema(yamlSchema); err != nil {
+	if err := download.ValidateSchema(yamlSchema); err != nil {
 		common.HandleError(fmt.Errorf("%s in %s", err, filename))
 	}
 
-	checksum, err := downloadpkg.DownloadFile(*yamlSchema.Source, downloadPath)
+	checksum, err := download.DownloadFile(*yamlSchema.Source, downloadPath)
 	if err != nil {
 		common.HandleError(err)
 	}
@@ -68,11 +67,11 @@ func download() {
 
 	paths := strings.Split(*yamlSchema.Source, "/")
 	filepath := paths[len(paths)-1]
-	if err := downloadpkg.Extract(filepath, downloadPath); err != nil {
+	if err := download.Extract(filepath, downloadPath); err != nil {
 		common.HandleError(err)
 	}
 	for _, patch := range yamlSchema.Patches {
-		if _, err := downloadpkg.DownloadFile(patch, downloadPath); err != nil {
+		if _, err := download.DownloadFile(patch, downloadPath); err != nil {
 			common.HandleError(err)
 		}
 	}

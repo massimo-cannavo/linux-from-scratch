@@ -1,5 +1,5 @@
 // Functions used to mount partitions from parsing a YAML file.
-package mountdev
+package mount
 
 import (
 	"errors"
@@ -62,9 +62,9 @@ func ValidateSchema(yamlSchema YamlSchema) error {
 	return nil
 }
 
-// Mount will mount all partitions from yamlSchema to the
+// MountDev will mount all partitions from yamlSchema to the
 // specified devPath.
-func Mount(yamlSchema YamlSchema, devPath string) error {
+func MountDev(yamlSchema YamlSchema, devPath string) error {
 	root := yamlSchema.Partitions["root"]
 	rootPath := fmt.Sprintf("%s%d", devPath, *root.Number)
 	if *root.Encrypted {

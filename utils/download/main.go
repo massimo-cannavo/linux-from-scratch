@@ -2,7 +2,7 @@
 package main
 
 import (
-	"github.com/massimo-cannavo/linux-from-scratch/utils/download-pkg/cmd"
+	"github.com/massimo-cannavo/linux-from-scratch/utils/download/cmd"
 )
 
 // The main entrypoint of the application.
