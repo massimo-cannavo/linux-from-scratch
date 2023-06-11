@@ -40,7 +40,7 @@ type Partition struct {
 
 type PartitionSchema struct {
 	Device          *string
-	PartitionScheme *string
+	PartitionScheme *string `yaml:"partitionScheme"`
 	Unit            *string
 	Partitions      map[string]Partition
 }
