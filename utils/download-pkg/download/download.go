@@ -74,11 +74,11 @@ func DownloadFile(url string, downloadPath string) (string, error) {
 func Extract(filepath string, destPath string) error {
 	fmt.Printf("extracting %s\n", filepath)
 	cmd := exec.Command("tar", "-xvf", filepath, "-C", destPath)
-	stdout, err := cmd.Output()
+	output, err := cmd.CombinedOutput()
 	if err != nil {
-		return err
+		return fmt.Errorf(string(output[:]))
 	}
 
-	fmt.Print(string(stdout[:]))
+	fmt.Print(string(output[:]))
 	return err
 }

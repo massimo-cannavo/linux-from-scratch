@@ -79,8 +79,9 @@ func Mount(yamlSchema YamlSchema, devPath string) error {
 	}
 
 	cmd := exec.Command("mount", rootPath, lfsPath)
-	if err := cmd.Run(); err != nil {
-		return err
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return fmt.Errorf(string(output[:]))
 	}
 
 	fmt.Printf("%s mounted on %s\n", rootPath, lfsPath)
@@ -97,8 +98,9 @@ func Mount(yamlSchema YamlSchema, devPath string) error {
 		}
 
 		cmd := exec.Command("mount", partitionPath, mountPath)
-		if err := cmd.Run(); err != nil {
-			return err
+		output, err := cmd.CombinedOutput()
+		if err != nil {
+			return fmt.Errorf(string(output[:]))
 		}
 
 		fmt.Printf("%s mounted on %s\n", partitionPath, mountPath)
@@ -112,9 +114,12 @@ func Mount(yamlSchema YamlSchema, devPath string) error {
 func decryptPartition(partitionPath string) error {
 	exitCode := 0
 	cmd := exec.Command("cryptsetup", "status", "root")
-	if err := cmd.Run(); err != nil {
+	output, err := cmd.CombinedOutput()
+	if err != nil {
 		if exitError, ok := err.(*exec.ExitError); ok {
 			exitCode = exitError.ExitCode()
+		} else {
+			return fmt.Errorf(string(output[:]))
 		}
 	}
 	if exitCode == 4 {
@@ -129,12 +134,12 @@ func decryptPartition(partitionPath string) error {
 			io.WriteString(stdin, os.Getenv("LUKS_PASSPHRASE"))
 		}()
 
-		stdout, err := cmd.Output()
+		output, err := cmd.CombinedOutput()
 		if err != nil {
-			return err
+			return fmt.Errorf(string(output[:]))
 		}
 
-		fmt.Print(string(stdout[:]))
+		fmt.Print(string(output[:]))
 	}
 
 	return nil
