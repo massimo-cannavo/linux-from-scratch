@@ -2,69 +2,17 @@
 package mount
 
 import (
-	"errors"
 	"fmt"
 	"io"
 	"os"
 	"os/exec"
+
+	"github.com/massimo-cannavo/linux-from-scratch/utils/common"
 )
-
-type Partition struct {
-	Number     *int
-	Filesystem *string
-	Flags      []string
-	Start      *int64
-	End        *int64
-	Encrypted  *bool
-}
-
-type YamlSchema struct {
-	Device     *string
-	Partitions map[string]Partition
-}
-
-// ValidateSchema validates that the required attributes
-// exist in yamlSchema.
-func ValidateSchema(yamlSchema YamlSchema) error {
-	if yamlSchema.Device == nil {
-		return errors.New("missing property: device")
-	}
-	if yamlSchema.Partitions == nil {
-		return errors.New("missing property: partitions")
-	}
-
-	rootExists := false
-	for key, partition := range yamlSchema.Partitions {
-		if partition.Number == nil {
-			return errors.New("missing property: number")
-		}
-		if partition.Filesystem == nil {
-			return errors.New("missing property: filesystem")
-		}
-		if partition.Start == nil {
-			return errors.New("missing property: start")
-		}
-		if partition.End == nil {
-			return errors.New("missing property: end")
-		}
-		if partition.Encrypted == nil {
-			return errors.New("missing property: encrypted")
-		}
-		if key == "root" {
-			rootExists = true
-		}
-	}
-
-	if !rootExists {
-		return errors.New("missing root partition")
-	}
-
-	return nil
-}
 
 // MountDev will mount all partitions from yamlSchema to the
 // specified devPath.
-func MountDev(yamlSchema YamlSchema, devPath string) error {
+func MountDev(yamlSchema common.PartitionSchema, devPath string) error {
 	root := yamlSchema.Partitions["root"]
 	rootPath := fmt.Sprintf("%s%d", devPath, *root.Number)
 	if *root.Encrypted {

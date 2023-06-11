@@ -12,7 +12,7 @@ import (
 	"strings"
 )
 
-type YamlSchema struct {
+type PackageSchema struct {
 	Name     *string
 	Source   *string
 	Checksum *string
@@ -21,7 +21,7 @@ type YamlSchema struct {
 
 // ValidateSchema validates that the required attributes
 // exist in yamlSchema.
-func ValidateSchema(yamlSchema YamlSchema) error {
+func ValidateSchema(yamlSchema PackageSchema) error {
 	if yamlSchema.Name == nil {
 		return errors.New("missing property: name")
 	}

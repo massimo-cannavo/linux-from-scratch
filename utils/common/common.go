@@ -2,6 +2,7 @@
 package common
 
 import (
+	"errors"
 	"fmt"
 	"io/fs"
 	"os"
@@ -26,6 +27,22 @@ var color = &Color{
 	green:  "\033[1;32m",
 	yellow: "\033[1;33m",
 	blue:   "\033[1;34m",
+}
+
+type Partition struct {
+	Number     *int
+	Filesystem *string
+	Flags      []string
+	Start      *int64
+	End        *int64
+	Encrypted  *bool
+}
+
+type PartitionSchema struct {
+	Device          *string
+	PartitionScheme *string
+	Unit            *string
+	Partitions      map[string]Partition
 }
 
 const PartitionsFile = "../partitions-schema.yaml"
@@ -56,6 +73,51 @@ func ParseYaml(filename string, yamlSchema interface{}) error {
 	}
 
 	return yaml.Unmarshal(data, yamlSchema)
+}
+
+// ValidateSchema validates that the required attributes
+// exist in yamlSchema.
+func ValidatePartitionSchema(yamlSchema PartitionSchema) error {
+	if yamlSchema.Device == nil {
+		return errors.New("missing property: device")
+	}
+	if yamlSchema.PartitionScheme == nil {
+		return errors.New("missing property: partitionScheme")
+	}
+	if yamlSchema.Unit == nil {
+		return errors.New("missing property: unit")
+	}
+	if yamlSchema.Partitions == nil {
+		return errors.New("missing property: partitions")
+	}
+
+	rootExists := false
+	for key, partition := range yamlSchema.Partitions {
+		if partition.Number == nil {
+			return errors.New("missing property: number")
+		}
+		if partition.Filesystem == nil {
+			return errors.New("missing property: filesystem")
+		}
+		if partition.Start == nil {
+			return errors.New("missing property: start")
+		}
+		if partition.End == nil {
+			return errors.New("missing property: end")
+		}
+		if partition.Encrypted == nil {
+			return errors.New("missing property: encrypted")
+		}
+		if key == "root" {
+			rootExists = true
+		}
+	}
+
+	if !rootExists {
+		return errors.New("missing root partition")
+	}
+
+	return nil
 }
 
 // GetDevPath looks for a device with the specified serialNo

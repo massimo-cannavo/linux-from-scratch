@@ -44,11 +44,11 @@ func mountDev() {
 		common.HandleError(fmt.Errorf("run as root"))
 	}
 
-	yamlSchema := mount.YamlSchema{}
+	yamlSchema := common.PartitionSchema{}
 	if err := common.ParseYaml(filename, &yamlSchema); err != nil {
 		common.HandleError(err)
 	}
-	if err := mount.ValidateSchema(yamlSchema); err != nil {
+	if err := common.ValidatePartitionSchema(yamlSchema); err != nil {
 		common.HandleError(fmt.Errorf("%s in %s", err, filename))
 	}
 
