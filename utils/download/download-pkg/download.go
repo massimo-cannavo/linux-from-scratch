@@ -16,8 +16,7 @@ type YamlSchema struct {
 	Name     *string
 	Source   *string
 	Checksum *string
-
-	Patches []string
+	Patches  []string
 }
 
 // ValidateSchema validates that the required attributes
