@@ -59,8 +59,10 @@ func partitionDev() {
 	} else if devPath == "" {
 		common.HandleError(fmt.Errorf("device not found: %s", *yamlSchema.Device))
 	}
-
 	if err := partition.DisplayPartitions(devPath); err != nil {
 		common.HandleError(err)
+	}
+	if whatIf {
+		partition.DisplayChanges(yamlSchema, devPath)
 	}
 }
