@@ -47,7 +47,7 @@ func DisplayChanges(yamlSchema common.PartitionSchema, devPath string) error {
 
 	dev := strings.Replace(devPath, "/dev/", "", 1)
 	for partitionName, partition := range yamlSchema.Partitions {
-		start := toBytes(int(*partition.Start), *yamlSchema.Unit)
+		start := toBytes(*partition.Start, *yamlSchema.Unit)
 		end := *partition.End
 		if end == -1 {
 			data, err := os.ReadFile(fmt.Sprintf("/sys/block/%s/size", dev))
@@ -62,7 +62,11 @@ func DisplayChanges(yamlSchema common.PartitionSchema, devPath string) error {
 			}
 
 			end = 512 * devSize
+		} else {
+			end = toBytes(end, *yamlSchema.Unit)
 		}
+
+		size, unit := toUnit(end-start, *yamlSchema.Unit)
 
 		fmt.Printf("Partition %d\n", *partition.Number)
 		fmt.Printf("  Name: %s%s%s\n",
@@ -70,24 +74,50 @@ func DisplayChanges(yamlSchema common.PartitionSchema, devPath string) error {
 		fmt.Printf("  Filesystem: %s%s%s\n",
 			common.Colors.Blue, *partition.Filesystem, common.Colors.Reset)
 		fmt.Printf("  Start %s%d%s\n",
-			common.Colors.Blue, start, common.Colors.Reset)
+			common.Colors.Blue, *partition.Start, common.Colors.Reset)
+		fmt.Printf("  End %s%d%s\n",
+			common.Colors.Blue, *partition.End, common.Colors.Reset)
+		fmt.Printf("  Size %s%d %s%s\n",
+			common.Colors.Blue, size, unit, common.Colors.Reset)
 	}
+
+	return nil
 }
 
 // toBytes converts size to bytes from the given unit.
-func toBytes(size int, unit string) int64 {
+func toBytes(size int64, unit string) int64 {
 	bytes, ok := unitSystem[unit]
 	if !ok {
 		common.HandleError(fmt.Errorf("invalid unit %s", unit))
 	}
 
-	units := map[string]int{
+	units := map[string]int64{
 		"B": 1,
-		"K": bytes,
-		"M": int(math.Pow(float64(bytes), 2)),
-		"G": int(math.Pow(float64(bytes), 3)),
-		"T": int(math.Pow(float64(bytes), 4)),
+		"K": int64(bytes),
+		"M": int64(math.Pow(float64(bytes), 2)),
+		"G": int64(math.Pow(float64(bytes), 3)),
+		"T": int64(math.Pow(float64(bytes), 4)),
 	}
 
 	return int64(size * units[string(unit[0])])
+}
+
+// toUnit converts bytes into the specified unit.
+func toUnit(size int64, unit string) (int64, string) {
+	bytes, ok := unitSystem[unit]
+	if !ok {
+		common.HandleError(fmt.Errorf("invalid unit %s", unit))
+	}
+
+	i := int(math.Floor(math.Log10(float64(size)) / math.Log10(float64(bytes))))
+	x := int64(math.Round(float64(size) / math.Pow(float64(bytes), float64(i))))
+	units := [5]string{"B", "K", "M", "G", "T"}
+	suffix := ""
+	if bytes == 1024 {
+		suffix = "iB"
+	} else if bytes == 1000 {
+		suffix = "B"
+	}
+
+	return x, fmt.Sprintf("%s%s", units[i], suffix)
 }
