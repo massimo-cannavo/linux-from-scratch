@@ -2,12 +2,11 @@
 package partition
 
 import (
-	"bytes"
-	"encoding/binary"
 	"fmt"
 	"math"
 	"os"
 	"os/exec"
+	"strconv"
 	"strings"
 
 	"github.com/massimo-cannavo/linux-from-scratch/utils/common"
@@ -55,13 +54,12 @@ func DisplayChanges(yamlSchema common.PartitionSchema, devPath string) error {
 				return err
 			}
 
-			reader := bytes.NewReader(data)
-			devSize, err := binary.ReadVarint(reader)
+			devSize, err := strconv.Atoi(strings.Replace(string(data), "\n", "", -1))
 			if err != nil {
 				return err
 			}
 
-			end = 512 * devSize
+			end = 512 * int64(devSize)
 		} else {
 			end = toBytes(end, *yamlSchema.Unit)
 		}
