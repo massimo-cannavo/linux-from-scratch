@@ -37,7 +37,9 @@ func DisplayPartitions(devPath string) error {
 	return err
 }
 
-// TODO: finish.
+// DisplayChanges outputs the partitions that will be created
+// from the yamlSchema that was parsed for the device located
+// at devPath.
 func DisplayChanges(yamlSchema common.PartitionSchema, devPath string) error {
 	fmt.Printf("%sDevice will be wiped and formatted:%s\n",
 		common.Colors.Yellow, common.Colors.Reset)
