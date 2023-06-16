@@ -66,5 +66,10 @@ func partitionDev() {
 		if err := partition.DisplayChanges(yamlSchema, devPath); err != nil {
 			common.HandleError(err)
 		}
+
+		os.Exit(0)
+	}
+	if err := partition.PartitionDev(yamlSchema, devPath); err != nil {
+		common.HandleError(err)
 	}
 }

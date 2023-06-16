@@ -121,3 +121,62 @@ func toUnit(size int64, unit string) (int64, string) {
 
 	return x, fmt.Sprintf("%s%s", units[i], suffix)
 }
+
+// PartitionDev partitions a device located at devPath
+// using yamlSchema data parsed from the YAML file.
+func PartitionDev(yamlSchema common.PartitionSchema, devPath string) error {
+	if err := unmountDev(devPath); err != nil {
+		return err
+	}
+
+	args := []string{
+		"parted", "--script", "--align", "optimal", devPath,
+		"mklabel", *yamlSchema.PartitionScheme, "unit", *yamlSchema.Unit,
+	}
+	for partitionName, partition := range yamlSchema.Partitions {
+		args = append(args, "mkpart", partitionName, *partition.Filesystem,
+			fmt.Sprint(*partition.Start),
+		)
+		end := *partition.End
+		if end == -1 {
+			args = append(args, "--")
+		}
+
+		args = append(args, fmt.Sprint(end))
+		for _, flag := range partition.Flags {
+			args = append(args, "set", fmt.Sprint(*partition.Number), flag, "on")
+		}
+	}
+
+	cmd := exec.Command(args[0], args[1:]...)
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return fmt.Errorf(string(output[:]))
+	}
+
+	fmt.Print(string(output[:]))
+	return err
+}
+
+// unmountDev unmounts all filesystems from the device
+// located at devPath.
+func unmountDev(devPath string) error {
+	cmd := exec.Command("lsblk", devPath, "--noheadings", "--raw", "--output", "MOUNTPOINT")
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return fmt.Errorf(string(output[:]))
+	}
+
+	mountPoints := strings.TrimSpace(string(output[:]))
+	if mountPoints != "" {
+		for _, mount := range strings.Split(mountPoints, "\n") {
+			cmd := exec.Command("umount", mount)
+			output, err := cmd.CombinedOutput()
+			if err != nil {
+				return fmt.Errorf(string(output[:]))
+			}
+		}
+	}
+
+	return err
+}
