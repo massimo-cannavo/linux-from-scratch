@@ -3,11 +3,13 @@ package partition
 
 import (
 	"fmt"
+	"io"
 	"math"
 	"os"
 	"os/exec"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/massimo-cannavo/linux-from-scratch/utils/common"
 )
@@ -24,17 +26,29 @@ var unitSystem = map[string]int{
 	"TB":  1000,
 }
 
+var mkfsCmd = map[string][]string{
+	"ext2":     {"mkfs.ext2"},
+	"ext3":     {"mkfs.ext3"},
+	"ext4":     {"mkfs.ext4"},
+	"xfs":      {"mkfs.xfs"},
+	"btrfs":    {"mkfs.btrfs"},
+	"reiserfs": {"mkreiserfs"},
+	"fat12":    {"mkfs.fat", "-F", "12"},
+	"fat16":    {"mkfs.fat", "-F", "16"},
+	"fat32":    {"mkfs.fat", "-F", "32"},
+}
+
 // DisplayPartitions outputs the current partition table of
 // the device located at devPath.
 func DisplayPartitions(devPath string) error {
 	cmd := exec.Command("parted", "--script", devPath, "print")
-	output, err := cmd.CombinedOutput()
-	if err != nil {
-		return fmt.Errorf(string(output[:]))
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	if err := cmd.Run(); err != nil {
+		return fmt.Errorf("failed to run: %s", cmd.Args[:])
 	}
 
-	fmt.Print(string(output[:]))
-	return err
+	return nil
 }
 
 // DisplayChanges outputs the partitions that will be created
@@ -149,13 +163,13 @@ func PartitionDev(yamlSchema common.PartitionSchema, devPath string) error {
 	}
 
 	cmd := exec.Command(args[0], args[1:]...)
-	output, err := cmd.CombinedOutput()
-	if err != nil {
-		return fmt.Errorf(string(output[:]))
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	if err := cmd.Run(); err != nil {
+		return fmt.Errorf("failed to run: %s", cmd.Args[:])
 	}
 
-	fmt.Print(string(output[:]))
-	return err
+	return nil
 }
 
 // unmountDev unmounts all filesystems from the device
@@ -171,11 +185,89 @@ func unmountDev(devPath string) error {
 	if mountPoints != "" {
 		for _, mount := range strings.Split(mountPoints, "\n") {
 			cmd := exec.Command("umount", mount)
-			output, err := cmd.CombinedOutput()
-			if err != nil {
-				return fmt.Errorf(string(output[:]))
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			if err := cmd.Run(); err != nil {
+				return fmt.Errorf("failed to run: %s", cmd.Args[:])
 			}
 		}
+	}
+
+	return err
+}
+
+// FormatPartitions formats all the partitions parsed from
+// yamlSchema of the device located at devPath.
+func FormatPartitions(yamlSchema common.PartitionSchema, devPath string) error {
+	for partitionName, partition := range yamlSchema.Partitions {
+		partitionPath := fmt.Sprintf("%s%d", devPath, *partition.Number)
+		if *partition.Encrypted {
+			err := encryptPartition(partitionPath, partitionName, os.Getenv("LUKS_PASSPHRASE"))
+			if err != nil {
+				return err
+			}
+
+			partitionPath = fmt.Sprintf("/dev/mapper/%s", partitionName)
+		}
+
+		args := mkfsCmd[*partition.Filesystem]
+		args = append(args, partitionPath)
+		cmd := exec.Command(args[0], args[1:]...)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		if err := cmd.Run(); err != nil {
+			return fmt.Errorf("failed to run: %s", cmd.Args[:])
+		}
+
+		if *partition.Encrypted {
+			time.Sleep(5 * time.Second)
+			cmd := exec.Command("cryptsetup", "close", partitionName)
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			if err := cmd.Run(); err != nil {
+				return fmt.Errorf("failed to run: %s", cmd.Args[:])
+			}
+		}
+	}
+
+	return nil
+}
+
+// encryptPartition encrypts a partition located at
+// partitionPath using passphrase.
+func encryptPartition(partitionPath string, partitionName string, passphrase string) error {
+	cmd := exec.Command("cryptsetup", "--verbose", "luksFormat", partitionPath)
+	stdin, err := cmd.StdinPipe()
+	if err != nil {
+		return err
+	}
+
+	go func() {
+		defer stdin.Close()
+		io.WriteString(stdin, passphrase)
+	}()
+
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	if err := cmd.Run(); err != nil {
+		return fmt.Errorf("failed to run: %s", cmd.Args[:])
+	}
+
+	cmd = exec.Command("cryptsetup", "open", partitionPath, partitionName)
+	stdin, err = cmd.StdinPipe()
+	if err != nil {
+		return err
+	}
+
+	go func() {
+		defer stdin.Close()
+		io.WriteString(stdin, os.Getenv("LUKS_PASSPHRASE"))
+	}()
+
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	if err := cmd.Run(); err != nil {
+		return fmt.Errorf("failed to run: %s", cmd.Args[:])
 	}
 
 	return err

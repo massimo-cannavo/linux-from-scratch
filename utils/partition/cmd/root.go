@@ -40,6 +40,8 @@ func init() {
 		"displays a preview of the operations to perform")
 }
 
+// partitionDev attempts to partition all partitions parsed
+// from a given YAML file.
 func partitionDev() {
 	if !common.IsUserRoot() {
 		common.HandleError(fmt.Errorf("run as root"))
@@ -70,6 +72,9 @@ func partitionDev() {
 		os.Exit(0)
 	}
 	if err := partition.PartitionDev(yamlSchema, devPath); err != nil {
+		common.HandleError(err)
+	}
+	if err := partition.FormatPartitions(yamlSchema, devPath); err != nil {
 		common.HandleError(err)
 	}
 }
