@@ -27,9 +27,10 @@ func MountDev(yamlSchema common.PartitionSchema, devPath string) error {
 	}
 
 	cmd := exec.Command("mount", rootPath, lfsPath)
-	output, err := cmd.CombinedOutput()
-	if err != nil {
-		return fmt.Errorf(string(output[:]))
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	if err := cmd.Run(); err != nil {
+		return fmt.Errorf("failed to run: %s", cmd.Args[:])
 	}
 
 	fmt.Printf("%s mounted on %s\n", rootPath, lfsPath)
@@ -46,9 +47,10 @@ func MountDev(yamlSchema common.PartitionSchema, devPath string) error {
 		}
 
 		cmd := exec.Command("mount", partitionPath, mountPath)
-		output, err := cmd.CombinedOutput()
-		if err != nil {
-			return fmt.Errorf(string(output[:]))
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		if err := cmd.Run(); err != nil {
+			return fmt.Errorf("failed to run: %s", cmd.Args[:])
 		}
 
 		fmt.Printf("%s mounted on %s\n", partitionPath, mountPath)
@@ -62,12 +64,13 @@ func MountDev(yamlSchema common.PartitionSchema, devPath string) error {
 func decryptPartition(partitionPath string) error {
 	exitCode := 0
 	cmd := exec.Command("cryptsetup", "status", "root")
-	output, err := cmd.CombinedOutput()
-	if err != nil {
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	if err := cmd.Run(); err != nil {
 		if exitError, ok := err.(*exec.ExitError); ok {
 			exitCode = exitError.ExitCode()
 		} else {
-			return fmt.Errorf(string(output[:]))
+			return fmt.Errorf("failed to run: %s", cmd.Args[:])
 		}
 	}
 	if exitCode == 4 {
@@ -82,12 +85,11 @@ func decryptPartition(partitionPath string) error {
 			io.WriteString(stdin, os.Getenv("LUKS_PASSPHRASE"))
 		}()
 
-		output, err := cmd.CombinedOutput()
-		if err != nil {
-			return fmt.Errorf(string(output[:]))
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		if err := cmd.Run(); err != nil {
+			return fmt.Errorf("failed to run: %s", cmd.Args[:])
 		}
-
-		fmt.Print(string(output[:]))
 	}
 
 	return nil
