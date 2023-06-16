@@ -45,7 +45,7 @@ type PartitionSchema struct {
 	Partitions      map[string]Partition
 }
 
-const PartitionsFile = "../partitions-schema.yaml"
+const PartitionsFile = "../partitions.yaml"
 
 // HandleError prints a formatted error message to Stderr
 // and exits gracefully.
