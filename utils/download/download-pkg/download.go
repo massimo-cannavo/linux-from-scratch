@@ -3,7 +3,6 @@ package download
 
 import (
 	"crypto/sha512"
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -11,29 +10,6 @@ import (
 	"os/exec"
 	"strings"
 )
-
-type PackageSchema struct {
-	Name     *string
-	Source   *string
-	Checksum *string
-	Patches  []string
-}
-
-// ValidateSchema validates that the required attributes
-// exist in yamlSchema.
-func ValidateSchema(yamlSchema PackageSchema) error {
-	if yamlSchema.Name == nil {
-		return errors.New("missing property: name")
-	}
-	if yamlSchema.Source == nil {
-		return errors.New("missing property: source")
-	}
-	if yamlSchema.Checksum == nil {
-		return errors.New("missing property: checksum")
-	}
-
-	return nil
-}
 
 // DownloadFile attempts to extract a filename from a given url
 // and downloads the contents of the file to downloadPath. A

@@ -47,11 +47,11 @@ func init() {
 
 // downloadPkg attempts to download and extract a package.
 func downloadPkg() {
-	yamlSchema := download.PackageSchema{}
+	yamlSchema := common.PackageSchema{}
 	if err := common.ParseYaml(filename, &yamlSchema); err != nil {
 		common.HandleError(err)
 	}
-	if err := download.ValidateSchema(yamlSchema); err != nil {
+	if err := common.ValidatePackageSchema(yamlSchema); err != nil {
 		common.HandleError(fmt.Errorf("%s in %s", err, filename))
 	}
 

@@ -29,6 +29,13 @@ var Colors = &Color{
 	Blue:   "\033[1;34m",
 }
 
+type PackageSchema struct {
+	Name     *string
+	Source   *string
+	Checksum *string
+	Patches  []string
+}
+
 type Partition struct {
 	Number     *int
 	Filesystem *string
@@ -75,7 +82,7 @@ func ParseYaml(filename string, yamlSchema interface{}) error {
 	return yaml.Unmarshal(data, yamlSchema)
 }
 
-// ValidateSchema validates that the required attributes
+// ValidatePartitionSchema validates that the required attributes
 // exist in yamlSchema.
 func ValidatePartitionSchema(yamlSchema PartitionSchema) error {
 	if yamlSchema.Device == nil {
@@ -115,6 +122,22 @@ func ValidatePartitionSchema(yamlSchema PartitionSchema) error {
 
 	if !rootExists {
 		return errors.New("missing root partition")
+	}
+
+	return nil
+}
+
+// ValidatePackageSchema validates that the required attributes
+// exist in yamlSchema.
+func ValidatePackageSchema(yamlSchema PackageSchema) error {
+	if yamlSchema.Name == nil {
+		return errors.New("missing property: name")
+	}
+	if yamlSchema.Source == nil {
+		return errors.New("missing property: source")
+	}
+	if yamlSchema.Checksum == nil {
+		return errors.New("missing property: checksum")
 	}
 
 	return nil
