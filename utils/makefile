@@ -14,6 +14,8 @@ $(MOUNT): mount/main.go
 $(PARTITION): partition/main.go
 	go build -o ${PARTITION} partition/main.go
 
+partition: $(PARTITION)
+
 clean:
 	rm ${DOWNLOAD}
 	rm ${MOUNT}

@@ -20,8 +20,14 @@ $ ./version-check.sh
 Like most other operating systems, LFS is usually installed on a dedicated partition. This
 process can be automated and reproducible using the [partitions.yaml](./partitions.yaml) file
 provided in this repository. You can modify that file to meet your partitioning requirements.
-The default will create a boot and encrypted root partition. You can reference the
-[partitions-schema.yaml](./partitions-schema.yaml) file for the supported options.
+The default will create a boot and encrypted root partition.
+
+Compile the partition script:
+
+```sh
+$ cd utils
+$ make partition
+```
 
 To determine the Serial ID of your device, execute the following command:
 
@@ -34,10 +40,11 @@ This allows you to preview the operations of the script. This is a recommended s
 should not be skipped. It's better to be safe then sorry.
 
 ```sh
-$ sudo python partition.py --what-if
+$ cd bin/
+$ sudo -E ./partition --what-if
 ```
 
-The **partition.py** script supports encrypting a partition by using an environment variable.
+The **partition** script supports encrypting a partition by using an environment variable.
 To set the LUKS passhprase, execute the following command:
 
 ```sh
@@ -54,5 +61,6 @@ The device will be wiped completely, use at your own risk.
 When you are ready to partition your device, execute the following command:
 
 ```sh
-$ sudo -E python partition.py
+$ cd bin/
+$ sudo -E ./partition
 ```
