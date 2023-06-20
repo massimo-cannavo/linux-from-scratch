@@ -5,9 +5,13 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
+
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
-// TODO:
+// ExtractYaml extracts the specified attribute from
+// yamlSchema using query.
 func ExtractYaml(yamlSchema interface{}, query string) error {
 	value := reflect.ValueOf(yamlSchema)
 	if query == "package" {
@@ -20,6 +24,23 @@ func ExtractYaml(yamlSchema interface{}, query string) error {
 		fmt.Printf("%s\n", strings.Replace(
 			strings.Replace(pkgPath[len(pkgPath)-1], ".tar.xz", "", -1), ".tar.gz", "", -1),
 		)
+	}
+
+	tokens := strings.Split(query, ".")
+	if len(tokens) > 1 {
+		for _, token := range tokens[1:] {
+			field := value.FieldByName(cases.Title(language.AmericanEnglish).String(token))
+			if !field.IsValid() {
+				return fmt.Errorf("invalid attribute %s", token)
+			}
+			if field.Kind() == reflect.Pointer {
+				fmt.Printf("%s\n", field.Elem())
+			} else if field.Kind() == reflect.Slice {
+				for i := 0; i < field.Len(); i++ {
+					fmt.Printf("%s\n", field.Index(i))
+				}
+			}
+		}
 	}
 
 	return nil

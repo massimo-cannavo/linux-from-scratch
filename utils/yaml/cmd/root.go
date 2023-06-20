@@ -42,7 +42,7 @@ func init() {
 	rootCmd.MarkFlagRequired("file")
 }
 
-// TODO:
+// parseYaml parses a YAML file given a query.
 func parseYaml() {
 	yamlSchema := common.PackageSchema{}
 	if err := common.ParseYaml(filename, &yamlSchema); err != nil {
