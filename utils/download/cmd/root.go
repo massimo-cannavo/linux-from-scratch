@@ -66,7 +66,7 @@ func downloadPkg() {
 	}
 
 	paths := strings.Split(*yamlSchema.Source, "/")
-	filepath := paths[len(paths)-1]
+	filepath := fmt.Sprintf("%s/%s", downloadPath, paths[len(paths)-1])
 	if err := download.Extract(filepath, downloadPath); err != nil {
 		common.HandleError(err)
 	}
