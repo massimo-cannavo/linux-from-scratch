@@ -5,7 +5,7 @@ MOUNT     := ${BIN_DIR}/mount
 PARTITION := ${BIN_DIR}/partition
 YAML      := ${BIN_DIR}/yaml
 
-all: $(DOWNLOAD) $(MOUNT) $(PARTITION) $(YAML)
+all: $(DOWNLOAD) $(YAML)
 
 $(DOWNLOAD): download/${MAIN}
 	go build -o ${DOWNLOAD} download/${MAIN}
@@ -20,6 +20,7 @@ $(YAML): yaml/${MAIN}
 	go build -o ${YAML} yaml/${MAIN}
 
 partition: $(PARTITION)
+mount: $(MOUNT)
 
 clean:
 	rm ${DOWNLOAD}

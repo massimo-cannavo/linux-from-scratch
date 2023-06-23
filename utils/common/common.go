@@ -31,6 +31,7 @@ var Colors = &Color{
 
 type PackageSchema struct {
 	Name     *string
+	Version  *string
 	Source   *string
 	Checksum *string
 	Patches  []string
@@ -132,6 +133,9 @@ func ValidatePartitionSchema(yamlSchema PartitionSchema) error {
 func ValidatePackageSchema(yamlSchema PackageSchema) error {
 	if yamlSchema.Name == nil {
 		return errors.New("missing property: name")
+	}
+	if yamlSchema.Version == nil {
+		return errors.New("missing property: version")
 	}
 	if yamlSchema.Source == nil {
 		return errors.New("missing property: source")

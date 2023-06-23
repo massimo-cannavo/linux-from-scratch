@@ -6,14 +6,10 @@
 set -e
 
 YAML_FILE=../glibc.yaml
-PKG_FILE=$(python ../../scripts/pyaml.py -f $YAML_FILE -q package)
-PATCHES=$(
-  python ../../scripts/pyaml.py \
-    -f $YAML_FILE               \
-    -q .patches
-)
+PKG_FILE=$(yaml -f $YAML_FILE -q package)
+PATCHES=$(yaml -f $YAML_FILE -q .patches)
 
-python ../../scripts/download.py -f $YAML_FILE
+download -f $YAML_FILE
 pushdq .
   cd "$LFS_SOURCES/$PKG_FILE"
   case $(uname -m) in

@@ -6,14 +6,10 @@
 set -e
 
 YAML_FILE=../libstdc++.yaml
-PKG_FILE=$(python ../../scripts/pyaml.py -f $YAML_FILE -q package)
-GCC_VERSION=$(
-  python ../../scripts/pyaml.py \
-    -f ../gcc.yaml              \
-    -q .version
-)
+PKG_FILE=$(yaml -f $YAML_FILE -q package)
+GCC_VERSION=$(yaml -f ../gcc.yaml -q .version)
 
-python ../../scripts/download.py -f $YAML_FILE
+download -f $YAML_FILE
 pushdq .
   cd "$LFS_SOURCES/$PKG_FILE"
   mkdir -pv build-libstdc++
