@@ -1,6 +1,6 @@
 name: xz
 version: "5.4.1"
-source: https://tukaani.org/xz/xz-5.4.1.tar.xz
+source: https://github.com/tukaani-project/xz/releases/download/v5.4.1/xz-5.4.1.tar.xz
 description: |
   XZ Utils is free general-purpose data compression software with a high compression
   ratio. XZ Utils were written for POSIX-like systems, but also work on some not-so-POSIX

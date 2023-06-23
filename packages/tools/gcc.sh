@@ -6,14 +6,12 @@
 # Exit when any command fails.
 set -e
 
-SCRIPTS=$(realpath ../../scripts)
-export SCRIPTS
 export CROSS_TOOLCHAIN=$PWD/../cross-toolchain
 
 YAML_FILE=../gcc.yaml
-PKG_FILE=$(python ../../scripts/pyaml.py -f $YAML_FILE -q package)
+PKG_FILE=$(yaml -f $YAML_FILE -q package)
 
-python ../../scripts/download.py -f $YAML_FILE
+download -f $YAML_FILE
 pushdq .
   cd "$LFS_SOURCES/$PKG_FILE"
   source "$CROSS_TOOLCHAIN/gmp.sh"

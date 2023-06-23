@@ -6,9 +6,9 @@
 set -e
 
 YAML_FILE=../gawk.yaml
-PKG_FILE=$(python ../../scripts/pyaml.py -f $YAML_FILE -q package)
+PKG_FILE=$(yaml -f $YAML_FILE -q package)
 
-python ../../scripts/download.py -f $YAML_FILE
+download -f $YAML_FILE
 pushdq .
   cd "$LFS_SOURCES/$PKG_FILE"
   sed -i 's/extras//' Makefile.in
