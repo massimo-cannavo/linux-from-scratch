@@ -16,27 +16,27 @@ esac
 mkdir -pv "$LFS"/{dev,proc,sys,run}
 grep -q "$LFS/dev"     /proc/mounts || mount -v --bind /dev "$LFS/dev"
 grep -q "$LFS/dev/pts" /proc/mounts || mount -v --bind /dev/pts "$LFS/dev/pts"
-
-grep -q "$LFS/proc" /proc/mounts || mount -vt proc proc "$LFS/proc"
-grep -q "$LFS/sys"  /proc/mounts || mount -vt sysfs sysfs "$LFS/sys"
-grep -q "$LFS/run"  /proc/mounts || mount -vt tmpfs tmpfs "$LFS/run"
+grep -q "$LFS/proc"    /proc/mounts || mount -vt proc proc "$LFS/proc"
+grep -q "$LFS/sys"     /proc/mounts || mount -vt sysfs sysfs "$LFS/sys"
+grep -q "$LFS/run"     /proc/mounts || mount -vt tmpfs tmpfs "$LFS/run"
 
 if ! grep -q "$LFS/dev/shm" /proc/mounts; then
   if [[ -h $LFS/dev/shm ]]; then
     mkdir -pv "$LFS/$(readlink "$LFS/dev/shm")"
   else
-    mount -vt tmpfs -o nosuid,nodev tmpfs "$LFS_SHM"
+    mount -vt tmpfs -o nosuid,nodev tmpfs "$LFS/dev/shm"
   fi
 fi
 
-rm -rf __pycache__
+mkdir -vp "$LFS/etc/ssl"
 mkdir -vp "$LFS_SOURCES/scripts"
-cp -v ./*{.sh,.py} "$LFS_SOURCES/scripts"
-
 mkdir -vp "$LFS_SOURCES/packages/chroot"
-cp -v ../packages/chroot/* "$LFS_SOURCES/packages/chroot"
-
 mkdir -vp "$LFS_SOURCES/packages/software"
+
+cp -v /etc/resolv.conf "$LFS/etc"
+cp -v ./*.sh "$LFS_SOURCES/scripts"
+cp -v ../packages/*.yaml "$LFS_SOURCES/packages"
+cp -v ../packages/chroot/* "$LFS_SOURCES/packages/chroot"
 cp -v ../packages/software/* "$LFS_SOURCES/packages/software"
 
-source chroot-download.sh
+curl -o "$LFS/etc/ssl/cacert.pem" https://curl.se/ca/cacert.pem
