@@ -6,22 +6,12 @@
 set -e
 
 YAML_FILE=../perl.yaml
-PKG_FILE="$(
-  grep 'source:' $YAML_FILE \
-    | cut -d ':' -f 2-3     \
-    | xargs basename        \
-    | sed 's/\.tar\.xz//g'
-)"
-VERSION=$(
-  grep 'version:' $YAML_FILE \
-    | cut -d ':' -f 2-3      \
-    | sed 's/"//g'           \
-    | xargs                  \
-    | cut -d '.' -f 1-2
-)
+PKG_FILE=$(yaml -f $YAML_FILE -q package)
+VERSION=$(yaml -f $YAML_FILE -q .version)
 MAJOR_VERSION="$(echo "$VERSION" | cut -d '.' -f 1)"
-PERL_LIB=/usr/lib/perl$MAJOR_VERSION/$VERSION
 
+PERL_LIB=/usr/lib/perl$MAJOR_VERSION/$VERSION
+download -f $YAML_FILE -d "$LFS_SOURCES"
 pushdq .
   cd "$LFS_SOURCES/$PKG_FILE"
   sh Configure -des                                 \

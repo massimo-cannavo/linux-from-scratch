@@ -6,13 +6,9 @@
 set -e
 
 YAML_FILE=../python.yaml
-PKG_FILE="$(
-  grep 'source:' $YAML_FILE \
-    | cut -d ':' -f 2-3     \
-    | xargs basename        \
-    | sed 's/\.tar\.xz//g'
-)"
+PKG_FILE=$(yaml -f $YAML_FILE -q package)
 
+download -f $YAML_FILE -d "$LFS_SOURCES"
 pushdq .
   cd "$LFS_SOURCES/$PKG_FILE"
   ./configure --prefix=/usr   \

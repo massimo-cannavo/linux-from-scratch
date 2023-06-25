@@ -6,19 +6,10 @@
 set -e
 
 YAML_FILE=../bison.yaml
-PKG_FILE="$(
-  grep 'source:' $YAML_FILE \
-    | cut -d ':' -f 2-3     \
-    | xargs basename        \
-    | sed 's/\.tar\.xz//g'
-)"
-VERSION=$(
-  grep 'version:' $YAML_FILE \
-    | cut -d ':' -f 2-3      \
-    | sed 's/"//g'           \
-    | xargs
-)
+PKG_FILE=$(yaml -f $YAML_FILE -q package)
+VERSION=$(yaml -f $YAML_FILE -q .version)
 
+download -f $YAML_FILE -d "$LFS_SOURCES"
 pushdq .
   cd "$LFS_SOURCES/$PKG_FILE"
   ./configure --prefix=/usr \

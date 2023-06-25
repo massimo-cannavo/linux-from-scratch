@@ -6,20 +6,11 @@
 set -e
 
 YAML_FILE=../util-linux.yaml
-PKG_FILE="$(
-  grep 'source:' $YAML_FILE \
-    | cut -d ':' -f 2-3     \
-    | xargs basename        \
-    | sed 's/\.tar\.xz//g'
-)"
-VERSION=$(
-  grep 'version:' $YAML_FILE \
-    | cut -d ':' -f 2-3      \
-    | sed 's/"//g'           \
-    | xargs
-)
+PKG_FILE=$(yaml -f $YAML_FILE -q package)
+VERSION=$(yaml -f $YAML_FILE -q .version)
 
 mkdir -pv /var/lib/hwclock
+download -f $YAML_FILE -d "$LFS_SOURCES"
 pushdq .
   cd "$LFS_SOURCES/$PKG_FILE"
   ./configure ADJTIME_PATH=/var/lib/hwclock/adjtime       \

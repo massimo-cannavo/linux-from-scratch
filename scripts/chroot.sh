@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC1091
 #
-# Commands executed in chroot environment.
+# Configures and builds the system a chroot environment.
 
 # Exit when any command fails.
 set -e
@@ -80,6 +80,7 @@ chgrp -v utmp /var/log/lastlog
 chmod -v 664  /var/log/lastlog
 chmod -v 600  /var/log/btmp
 
+export SSL_CERT_FILE=/etc/ssl/cacert.pem
 pushdq .
   cd $LFS_SOURCES/packages/chroot
   source gettext.sh
@@ -93,4 +94,6 @@ popdq
 rm -rf /usr/share/{info,man,doc}/*
 find /usr/{lib,libexec} -name \*.la -delete
 
-rm -rf /tools
+# rm -rf /tools
+
+# source $LFS_SOURCES/scripts/system-software.sh
