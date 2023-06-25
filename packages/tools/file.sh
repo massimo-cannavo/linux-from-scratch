@@ -12,7 +12,7 @@ download -f $YAML_FILE
 pushdq .
   cd "$LFS_SOURCES/$PKG_FILE"
 
-  mkdir -pv build
+  mkdir -v build
   pushdq build
     ../configure --disable-bzlib      \
                  --disable-libseccomp \

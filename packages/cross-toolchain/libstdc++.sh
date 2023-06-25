@@ -12,7 +12,7 @@ GCC_VERSION=$(yaml -f ../gcc.yaml -q .version)
 download -f $YAML_FILE
 pushdq .
   cd "$LFS_SOURCES/$PKG_FILE"
-  mkdir -pv build-libstdc++
+  mkdir -v build-libstdc++
   cd build-libstdc++
 
   ../libstdc++-v3/configure --host="$LFS_TGT"            \

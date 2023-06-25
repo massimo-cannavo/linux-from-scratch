@@ -27,7 +27,7 @@ pushdq .
     patch -Np1 -i "../$patch_file"
   done
 
-  mkdir -pv build
+  mkdir -v build
   cd build
   echo "rootsbindir=/usr/sbin" > configparms
 

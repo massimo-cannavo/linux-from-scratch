@@ -24,7 +24,7 @@ pushdq .
       ;;
   esac
 
-  mkdir -pv build
+  mkdir -v build
   cd build
 
   ../configure --target="$LFS_TGT"                   \

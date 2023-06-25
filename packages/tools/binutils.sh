@@ -14,7 +14,7 @@ pushdq .
   # shellcheck disable=SC2016
   sed '6009s/$add_dir//' -i ltmain.sh
 
-  mkdir -pv build-pass2
+  mkdir -v build-pass2
   cd build-pass2
 
   ../configure --prefix=/usr                \

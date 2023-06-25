@@ -27,7 +27,7 @@ pushdq .
   sed '/thread_header =/s/@.*@/gthr-posix.h/' \
     -i libgcc/Makefile.in libstdc++-v3/include/Makefile.in
 
-  mkdir -pv build-pass2
+  mkdir -v build-pass2
   cd build-pass2
 
   ../configure --host="$LFS_TGT"            \
