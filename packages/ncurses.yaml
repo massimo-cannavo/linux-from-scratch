@@ -7,5 +7,8 @@ description: |
   and color and multiple highlights and forms characters and function-key mapping,
   and has all the other SVr4-curses enhancements over BSD curses. SVr4 curses became
   the basis of X/Open Curses.
+dependencies:
+  - name: glibc
+    version: "2.37"
 checksum:
   1c2efff87a82a57e57b0c60023c87bae93f6718114c8f9dc010d4c21119a2f7576d0225dab5f0a227c2cfc6fb6bdbd62728e407f35fce5bf351bb50cf9e0fd34

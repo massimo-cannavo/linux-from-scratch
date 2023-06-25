@@ -4,5 +4,8 @@ source: https://ftp.gnu.org/gnu/diffutils/diffutils-3.9.tar.xz
 description: |
   GNU Diffutils is a package of several programs related to finding differences
   between files.
+dependencies:
+  - name: glibc
+    version: "2.37"
 checksum:
   d43280cb1cb2615a8867d971467eb9a3fa037fe9a411028068036f733dab42b10d42767093cea4de71e62b2659a3ec73bd7d1a8f251befd49587e32802682d0f

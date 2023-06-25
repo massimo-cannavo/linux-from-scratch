@@ -4,5 +4,14 @@ source: https://www.kernel.org/pub/linux/utils/util-linux/v2.38/util-linux-2.38.
 description: |
   Miscellaneous system utilities for Linux. A standard package distributed by the
   Linux Kernel Organization for use as part of the Linux operating system.
+dependencies:
+  - name: glibc
+    version: "2.37"
+  - name: ncurses
+    version: "6.4"
+  - name: readline
+    version: "8.2"
+  - name: zlib
+    version: "1.2.13"
 checksum:
   07f11147f67dfc6c8bc766dfc83266054e6ede776feada0566b447d13276b6882ee85c6fe53e8d94a17c03332106fc0549deca3cf5f2e92dda554e9bc0551957

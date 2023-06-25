@@ -4,10 +4,5 @@ source: https://ftp.gnu.org/gnu/gcc/gcc-12.2.0/gcc-12.2.0.tar.xz
 description: |
   Libstdc++ is the standard C++ library. It is needed to compile C++ code, part
   of GCC is written in C++.
-dependencies:
-  - name: gcc
-    version: "12.2.0"
-  - name: glibc
-    version: "2.37"
 checksum:
   e9e857bd81bf7a370307d6848c81b2f5403db8c7b5207f54bce3f3faac3bde63445684092c2bc1a2427cddb6f7746496d9fbbef05fbbd77f2810b2998f1f9173

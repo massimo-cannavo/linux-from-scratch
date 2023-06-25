@@ -7,13 +7,15 @@ description: |
   as the compiler for the GNU operating system. The GNU system was developed to be 100%
   free software, free in the sense that it respects the user's freedom.
 dependencies:
+  - name: bash
+    version: "5.2.15"
   - name: binutils
     version: "2.40"
-  - name: gmp
-    version: "6.2.1"
+  - name: glibc
+    version: "2.37"
   - name: mpc
     version: "1.3.1"
-  - name: mpfr
-    version: "4.2.0"
+  - name: python
+    version: "3.11.2"
 checksum:
   e9e857bd81bf7a370307d6848c81b2f5403db8c7b5207f54bce3f3faac3bde63445684092c2bc1a2427cddb6f7746496d9fbbef05fbbd77f2810b2998f1f9173

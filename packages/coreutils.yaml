@@ -5,5 +5,8 @@ description: |
   The GNU Core Utilities are the basic file, shell and text manipulation utilities
   of the GNU operating system. These are the core utilities which are expected to
   exist on every operating system.
+dependencies:
+  - name: glibc
+    version: "2.37"
 checksum:
   a6ee2c549140b189e8c1b35e119d4289ec27244ec0ed9da0ac55202f365a7e33778b1dc7c4e64d1669599ff81a8297fe4f5adbcc8a3a2f75c919a43cd4b9bdfa

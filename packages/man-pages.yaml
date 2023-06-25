@@ -1,0 +1,10 @@
+name: man-pages
+version: "6.03"
+source: https://www.kernel.org/pub/linux/docs/man-pages/man-pages-6.03.tar.xz
+description: |
+  The Linux man-pages project documents the Linux kernel and C library interfaces
+  that are employed by user-space programs. With respect to the C library, the primary
+  focus is the GNU C library (glibc), although, where known, documentation of variations
+  in other C libraries available for Linux is also included.
+checksum:
+  df9de826c8289869fb27928f14eb28040b0f5bdae18247dc2ea847e660dd8bff9eee5656f6b2b38330abc64b69cad7cd44681bdf49173dd49a53877eaf725dba

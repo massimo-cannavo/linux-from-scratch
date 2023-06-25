@@ -5,5 +5,10 @@ description: |
   The GNU Binutils are a collection of binary tools. Most of these programs use BFD,
   the Binary File Descriptor library, to do low-level manipulation. Many of them also
   use the opcodes library to assemble and disassemble machine instructions.
+dependencies:
+  - name: glibc
+    version: "2.37"
+  - name: zlib
+    version: "1.2.13"
 checksum:
   a37e042523bc46494d99d5637c3f3d8f9956d9477b748b3b1f6d7dfbb8d968ed52c932e88a4e946c6f77b8f48f1e1b360ca54c3d298f17193f3b4963472f6925

@@ -8,5 +8,8 @@ description: |
   parser tables. Once you are proficient with Bison, you can use it to develop a wide range
   of language parsers, from those used in simple desk calculators to complex programming
   languages.
+dependencies:
+  - name: glibc
+    version: "2.37"
 checksum:
   d4d23af6671406e97257892f90651b67f2ab95219831372be032190b7156c10a3435d457857e677445df8b2327aacccc15344acbbc3808a6f332a93cce23b444

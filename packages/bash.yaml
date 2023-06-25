@@ -7,5 +7,12 @@ description: |
   (csh). It is intended to conform to the IEEE POSIX P1003.2/ISO 9945.2 Shell and Tools
   standard. It offers functional improvements over sh for both programming and interactive
   use. In addition, most sh scripts can be run by Bash without modification.
+dependencies:
+  - name: glibc
+    version: "2.37"
+  - name: ncurses
+    versions: "6.4"
+  - name: readline
+    version: "8.2"
 checksum:
   08a67f6da4af7a75ff2b2d5a9eb8fc46d8c6e9ae80ccaf73b51736d6609916861b1f3fced938ce3ea16d014edb324e1a3d8e03f4917f68dc56ffb665316f26c7

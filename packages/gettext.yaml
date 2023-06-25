@@ -11,5 +11,14 @@ description: |
   directory and file naming organization for the message catalogs themselves, a runtime
   library supporting the retrieval of translated messages, and a few stand-alone programs
   to massage in various ways the sets of translatable strings, or already translated strings.
+dependencies:
+  - name: acl
+    version: "2.3.1"
+  - name: bash
+    version: "5.2.15"
+  - name: gcc
+    version: "12.2.0"
+  - name: glibc
+    version: "2.37"
 checksum:
   61e93bc9876effd3ca1c4e64ff6ba5bd84b24951ec2cc6f40a0e3248410e60f887552f29ca1f70541fb5524f6a4e8191fed288713c3e280e18922dd5bff1a2c9
