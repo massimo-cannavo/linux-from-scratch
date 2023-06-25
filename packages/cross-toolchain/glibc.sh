@@ -47,4 +47,9 @@ pushdq .
   rm -v a.out
 
   "$LFS/tools/libexec/gcc/$LFS_TGT/12.2.0/install-tools/mkheaders"
+
+  for patch in $PATCHES; do
+    patch_file=$(echo "$patch" | xargs basename)
+    patch -Rp1 -i "../$patch_file"
+  done
 popdq

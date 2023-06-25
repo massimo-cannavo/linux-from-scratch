@@ -1,0 +1,10 @@
+name: iana-etc
+version: "20230202"
+source: https://github.com/Mic92/iana-etc/releases/download/20230202/iana-etc-20230202.tar.gz
+description: |
+  Protocol parameter registries represent the authoritative record of many of the codes
+  and numbers contained in a variety of Internet protocols. We maintain these records in
+  compliance with the associated technical standards and allocation policies, and we provide
+  this service in coordination with the Internet Engineering Task Force (IETF).
+checksum:
+  5347a8606ba65880faedbb8d45b65379cffcea8a6c8b804570bac3b196c66d3a21cda5ac38c2a813f29cc86b383570518aa214dcd6585cdee6d9076d3085ae60
