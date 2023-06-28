@@ -1,0 +1,10 @@
+--- a/tst-lchmod.c	2023-06-27 21:52:30.662896426 -0400
++++ b/tst-lchmod.c	2023-06-27 21:55:32.958079137 -0400
+@@ -287,6 +287,7 @@
+     }
+ #endif /* <sys/mount.h>.  */
+ 
++  support_descriptors_check (descriptors);
+   support_descriptors_free (descriptors);
+ 
+   return 0;
