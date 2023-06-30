@@ -96,4 +96,9 @@ find /usr/{lib,libexec} -name \*.la -delete
 
 # rm -rf /tools
 
-# source $LFS_SOURCES/scripts/system-software.sh
+pushdq .
+  cd "$LFS_SOURCES/packages/software"
+  source man-pages.sh
+  source iana-etc.sh
+  source glibc.sh
+popdq

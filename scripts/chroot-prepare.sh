@@ -35,7 +35,6 @@ mkdir -vp "$LFS_SOURCES/packages/software"
 
 cp -v /etc/resolv.conf "$LFS/etc"
 cp -v ./*.sh "$LFS_SOURCES/scripts"
-cp -v ../patches/*.patch "$LFS_SOURCES/packages"
 cp -v ../packages/*.yaml "$LFS_SOURCES/packages"
 cp -v ../packages/chroot/* "$LFS_SOURCES/packages/chroot"
 cp -v ../packages/software/* "$LFS_SOURCES/packages/software"
