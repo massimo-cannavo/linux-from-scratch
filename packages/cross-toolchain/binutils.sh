@@ -11,9 +11,8 @@ PKG_FILE=$(yaml -f $YAML_FILE -q package)
 download -f $YAML_FILE
 pushdq .
   cd "$LFS_SOURCES/$PKG_FILE"
-  mkdir -v build
+  mkdir -pv build
   cd build
-
   ../configure --prefix="$LFS/tools" \
                --with-sysroot="$LFS" \
                --target="$LFS_TGT"   \

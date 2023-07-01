@@ -17,7 +17,6 @@ pushdq .
   source "$CROSS_TOOLCHAIN/gmp.sh"
   source "$CROSS_TOOLCHAIN/mpc.sh"
   source "$CROSS_TOOLCHAIN/mpfr.sh"
-
   case $ARCH in
     x86_64)
       sed -e '/m64=/s/lib64/lib/' -i.orig gcc/config/i386/t-linux64
@@ -27,9 +26,8 @@ pushdq .
   sed '/thread_header =/s/@.*@/gthr-posix.h/' \
     -i libgcc/Makefile.in libstdc++-v3/include/Makefile.in
 
-  mkdir -v build-pass2
+  mkdir -pv build-pass2
   cd build-pass2
-
   ../configure --host="$LFS_TGT"            \
                --build="$(../config.guess)" \
                --target="$LFS_TGT"          \

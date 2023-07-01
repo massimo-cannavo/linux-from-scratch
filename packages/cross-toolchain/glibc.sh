@@ -27,10 +27,9 @@ pushdq .
     patch -Np1 -i "../$patch_file"
   done
 
-  mkdir -v build
+  mkdir -pv build
   cd build
   echo "rootsbindir=/usr/sbin" > configparms
-
   ../configure --prefix=/usr                        \
                --host="$LFS_TGT"                    \
                --build="$(../scripts/config.guess)" \
@@ -47,7 +46,6 @@ pushdq .
   rm -v a.out
 
   "$LFS/tools/libexec/gcc/$LFS_TGT/12.2.0/install-tools/mkheaders"
-
   for patch in $PATCHES; do
     patch_file=$(echo "$patch" | xargs basename)
     patch -Rp1 -i "../$patch_file"

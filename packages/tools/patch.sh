@@ -11,8 +11,8 @@ PKG_FILE=$(yaml -f $YAML_FILE -q package)
 download -f $YAML_FILE
 pushdq .
   cd "$LFS_SOURCES/$PKG_FILE"
-  ./configure --prefix=/usr     \
-              --host="$LFS_TGT" \
+  ./configure --prefix=/usr                       \
+              --host="$LFS_TGT"                   \
               --build="$(build-aux/config.guess)"
 
   make -j"$(nproc)"

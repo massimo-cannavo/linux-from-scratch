@@ -13,7 +13,7 @@ pushdq .
   cd "$LFS_SOURCES/$PKG_FILE"
   sed -i s/mawk// configure
 
-  mkdir -v build
+  mkdir -pv build
   pushdq build
     ../configure
     make -C include

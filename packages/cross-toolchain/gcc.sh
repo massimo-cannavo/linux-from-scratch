@@ -17,16 +17,14 @@ pushdq .
   source "$CROSS_TOOLCHAIN/gmp.sh"
   source "$CROSS_TOOLCHAIN/mpc.sh"
   source "$CROSS_TOOLCHAIN/mpfr.sh"
-
   case $ARCH in
     x86_64)
       sed -e '/m64=/s/lib64/lib/' -i.orig gcc/config/i386/t-linux64
       ;;
   esac
 
-  mkdir -v build
+  mkdir -pv build
   cd build
-
   ../configure --target="$LFS_TGT"                   \
                --prefix="$LFS/tools"                 \
                --with-glibc-version="$GLIBC_VERSION" \

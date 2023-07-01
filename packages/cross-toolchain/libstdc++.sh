@@ -12,9 +12,8 @@ GCC_VERSION=$(yaml -f ../gcc.yaml -q .version)
 download -f $YAML_FILE
 pushdq .
   cd "$LFS_SOURCES/$PKG_FILE"
-  mkdir -v build-libstdc++
+  mkdir -pv build-libstdc++
   cd build-libstdc++
-
   ../libstdc++-v3/configure --host="$LFS_TGT"            \
                             --build="$(../config.guess)" \
                             --prefix=/usr                \
