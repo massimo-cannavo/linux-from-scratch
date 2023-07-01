@@ -101,4 +101,5 @@ pushdq .
   source man-pages.sh
   source iana-etc.sh
   source glibc.sh
+  source tzdata.sh
 popdq
