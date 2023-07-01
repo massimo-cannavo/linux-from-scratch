@@ -20,7 +20,7 @@ pushdq .
   sed '/width -=/s/workend - string/number_length/' \
     -i stdio-common/vfprintf-process-arg.c
 
-  mkdir -v build-pass2
+  mkdir -pv build-pass2
   cd build-pass2
   echo "rootsbindir=/usr/sbin" > configparms
   ../configure --prefix=/usr                   \
