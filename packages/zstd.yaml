@@ -1,0 +1,13 @@
+name: zstd
+version: "1.5.4"
+source: https://github.com/facebook/zstd/releases/download/v1.5.4/zstd-1.5.4.tar.gz
+description: |
+  Zstandard is a fast compression algorithm, providing high compression ratios. It
+  also offers a special mode for small data, called dictionary compression. The reference
+  library offers a very wide range of speed / compression trade-off, and is backed by an
+  extremely fast decoder
+dependencies:
+  - name: glibc
+    version: "2.37"
+checksum:
+  2896a6dd6b60cc251720356babcbab6018c874eb2149121b26e28041496fc355a9cb5fd1b39c91558fcfbafb789b3d721264a0f9b5734f893d5f3cdf97016394

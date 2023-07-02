@@ -1,0 +1,18 @@
+name: readline
+version: "8.2"
+source: https://ftp.gnu.org/gnu/readline/readline-8.2.tar.gz
+description: |
+  The GNU Readline library provides a set of functions for use by applications
+  that allow users to edit command lines as they are typed in. Both Emacs and vi
+  editing modes are available. The Readline library includes additional functions
+  to maintain a list of previously-entered command lines, to recall and perhaps reedit
+  those lines, and perform csh-like history expansion on previous commands.
+dependencies:
+  - name: glibc
+    version: "2.37"
+  - name: ncurses
+    version: "6.4"
+patches:
+  - https://www.linuxfromscratch.org/patches/lfs/11.3/readline-8.2-upstream_fix-1.patch
+checksum:
+  0a451d459146bfdeecc9cdd94bda6a6416d3e93abd80885a40b334312f16eb890f8618a27ca26868cebbddf1224983e631b1cbc002c1a4d1cd0d65fba9fea49a

@@ -102,4 +102,13 @@ pushdq .
   source iana-etc.sh
   source glibc.sh
   source tzdata.sh
+  source zlib.sh
+  source bzip2.sh
+  source xz.sh
+  source zstd.sh
+  source file.sh
+  source readline.sh
+  source m4.sh
+  source bc.sh
+  source flex.sh
 popdq

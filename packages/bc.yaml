@@ -1,0 +1,15 @@
+name: bc
+version: "6.2.4"
+source: https://github.com/gavinhoward/bc/releases/download/6.2.4/bc-6.2.4.tar.xz
+description: |
+  bc is an arbitrary precision numeric processing language. Syntax is similar to C,
+  but differs in many substantial areas. It supports interactive execution of statements.
+dependencies:
+  - name: glibc
+    version: "2.37"
+  - name: ncurses
+    version: "6.4"
+  - name: readline
+    version: "8.2"
+checksum:
+  0d573b118214aa345995f28ccce16dbbeb8dbb3aa793414b5e6c4a693f5f51e3c54f3fda60703b66183476933363d21dd2de06cec8bbc54d1bce4725957e5d38
