@@ -1,0 +1,14 @@
+name: tcl
+version: "8.6.13"
+source: https://gitea.com/massimo/tcl/archive/tcl-8.6.13.tar.gz
+description: |
+  Tcl (Tool Command Language) is a very powerful but easy to learn dynamic
+  programming language, suitable for a very wide range of uses, including web
+  and desktop applications, networking, administration, testing and many more.
+dependencies:
+  - name: glibc
+    version: "2.37"
+  - name: zlib
+    version: "1.2.13"
+checksum:
+  bc02caa5b083165e23c260f3d3be59671c0521123a7441c30073acd37ed87df49ce2d4210023e37402c9c3c5e5acd28bc2b45fa820768d9de5b4ffe9817bc43c

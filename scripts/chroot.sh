@@ -111,4 +111,5 @@ pushdq .
   source m4.sh
   source bc.sh
   source flex.sh
+  source tcl.sh
 popdq
