@@ -1,0 +1,16 @@
+name: dejagnu
+version: "1.6.3"
+source: https://ftp.gnu.org/gnu/dejagnu/dejagnu-1.6.3.tar.gz
+description: |
+  DejaGnu is a framework for testing other programs. Its purpose is to provide a
+  single front end for all tests. Think of it as a custom library of Tcl procedures
+  crafted to support writing a test harness. A test harness is the testing infrastructure
+  that is created to support a specific program or tool. Each program can have multiple
+  testsuites, all supported by a single test harness.
+dependencies:
+  - name: expect
+    version: "5.45.4"
+  - name: bash
+    version: "5.2.15"
+checksum:
+  1a737132bd912cb527e7f2fcbe70ffff8ccc8604a0ffdecff87ba2a16aeeefd800f5792aeffdbe79be6daa35cedb1c60e41002ca4aabb5370a460028191b76c4

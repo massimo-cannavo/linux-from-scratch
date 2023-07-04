@@ -112,4 +112,10 @@ pushdq .
   source bc.sh
   source flex.sh
   source tcl.sh
+  source expect.sh
+  source dejagnu.sh
+  source binutils.sh
+  source gmp.sh
+  source mpfr.sh
+  source mpc.sh
 popdq

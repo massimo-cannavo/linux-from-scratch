@@ -1,0 +1,14 @@
+name: expect
+version: "5.45.4"
+source: https://gitea.com/massimo/expect/archive/expect-5.45.4.tar.gz
+description: |
+  Expect is a tool for automating interactive applications such as telnet, ftp,
+  passwd, fsck, rlogin, tip, etc. Expect really makes this stuff trivial. Expect
+  is also useful for testing these same applications.
+dependencies:
+  - name: glibc
+    version: "2.37"
+  - name: tcl
+    version: "8.6.13"
+checksum:
+  37b2576cfdf8711693e97544cbde97083cd11859677368a851aa239da633d42b1fdbd2ffd531b2bf8d7fc2dc4c783d8fc0b1716c9719769573dbe786ce7c41d8
