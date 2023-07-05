@@ -11,7 +11,7 @@ PKG_FILE=$(yaml -f $YAML_FILE -q package)
 download -f $YAML_FILE -d "$LFS_SOURCES"
 pushdq .
   cd "$LFS_SOURCES/$PKG_FILE"
-  mkdir -v build
+  mkdir -pv build
   cd build
 
   ../configure --prefix=/usr

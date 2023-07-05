@@ -118,4 +118,9 @@ pushdq .
   source gmp.sh
   source mpfr.sh
   source mpc.sh
+  source attr.sh
+  source acl.sh
+  source libcap.sh
+  source shadow.sh
+  source gcc.sh
 popdq

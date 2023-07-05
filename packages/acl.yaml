@@ -1,0 +1,13 @@
+name: acl
+version: "2.3.1"
+source: https://download.savannah.gnu.org/releases/acl/acl-2.3.1.tar.xz
+description: |
+  Access Control Lists are used to define more fine-grained discretionary access
+  rights for files and directories.
+dependencies:
+  - name: attr
+    version: "2.5.1"
+  - name: glibc
+    version: "2.37"
+checksum:
+  7d02f05d17305f8587ab485395b00c7fdb8e44c1906d0d04b70a43a3020803e8b2b8c707abb6147f794867dfa87bd51769c2d3e11a3db55ecbd2006a6e6231dc

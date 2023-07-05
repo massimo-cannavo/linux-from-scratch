@@ -1,0 +1,12 @@
+name: libcap
+version: "2.67"
+source: https://www.kernel.org/pub/linux/libs/security/linux-privs/libcap2/libcap-2.67.tar.xz
+description: |
+  Libcap implements the user-space interfaces to the POSIX 1003.1e capabilities available
+  in Linux kernels. These capabilities are a partitioning of the all powerful root privilege
+  into a set of distinct privileges.
+dependencies:
+  - name: glibc
+    version: "2.37"
+checksum:
+  2e52c5a571cc1565e6829b0889f63216af10dfd9a86485f8ae7d0fcf4cc0db96aa21eb2ddea29e8dadf41a1194e91fb5961fe84ba07beb2ce950b6131be099d4

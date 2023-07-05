@@ -1,0 +1,11 @@
+name: shadow
+version: "4.13"
+source: https://github.com/shadow-maint/shadow/releases/download/4.13/shadow-4.13.tar.xz
+description: |
+  The shadow utils package includes the necessary programs for converting UNIX password
+  files to the shadow password format, plus programs for managing user and group accounts.
+dependencies:
+  - name: glibc
+    version: "2.37"
+checksum:
+  2949a728c3312bef13d23138d6b79caf402781b1cb179e33b5be546c1790971ec20778d0e9cd3dbe09691d928ffcbe88e60da42fab58c69a90d5ebe5e3e2ab8e
